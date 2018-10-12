@@ -1,0 +1,12 @@
+*.pyc
+*.retry
+*.tmp
+*~
+.DS_Store
+.vagrant
+/env.sh
+/terraform/.terraform*
+/terraform/terraform.tfstate*
+/terraform/tf.plan
+__pycache__
+build/
