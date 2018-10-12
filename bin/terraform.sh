@@ -21,6 +21,7 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$DIR/.."
 BUILD_DIR="$BASE_DIR/build"
+export BUILD_DIR
 #shellcheck disable=SC1090
 . "$DIR/common.sh"
 #shellcheck disable=SC1090
