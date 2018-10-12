@@ -1,7 +1,7 @@
 # High level AWS variables
 variable "aws_region" {
   description = "Amazon Region to use"
-  default     = "us-east-1"
+  default     = "us-west-2"
 }
 
 # Auto Scaling Groups related variables
