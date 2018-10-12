@@ -15,11 +15,12 @@ final default_timeout_minutes = 20
 /** Set up CAPTCHA*/
 final int MAX = 10
 final Long XOR_CONST = MAX * 3
-def get_captcha(Long hash_const) {
+
+def get_captcha(Long hash_const, int max) {
     Random rand = new Random()
-    def op1 = rand.nextInt(MAX+1)
-    def op2 = rand.nextInt(MAX+1) + MAX
-    def op3 = rand.nextInt(MAX+1) 
+    def op1 = rand.nextInt(max+1)
+    def op2 = rand.nextInt(max+1) + max
+    def op3 = rand.nextInt(max+1) 
     def captcha_problem = "CAPTCHA problem: What is the answer to this problem: ${op1} + ${op2} - ${op3}"
     Long captcha_answer = op1 + op2 - op3
     Long captcha_hash = captcha_answer ^ hash_const
@@ -40,7 +41,7 @@ def wrap = { fn->
     }
 }
 
-(captcha_problem, captcha_hash) = get_captcha(XOR_CONST)
+(captcha_problem, captcha_hash) = get_captcha(XOR_CONST,MAX)
 
 /** Gather properties from user parameters */
 properties([
