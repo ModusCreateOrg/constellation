@@ -88,6 +88,10 @@ function apply() {
     $DOCKER_TERRAFORM apply \
         -lock=true \
         "$TF_PLAN"
+    $DOCKER_TERRAFORM output 
+}
+
+function output() {
 }
 
 case "$verb" in
