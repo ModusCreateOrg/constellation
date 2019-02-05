@@ -41,6 +41,10 @@ The AWS profile IAM user should have full control of EC2 in the account you are 
 
 A `Jenkinsfile` is provided that will allow Jenkins to execute Terraform. In order for Jenkins to do this, it needs to have AWS credentials set up, preferably through an IAM role, granting full control of EC2 and VPC resources in that account. Terraform needs this to create a VPC and EC2 resources. This could be pared down further through some careful logging and role work.
 
+#### Requirements
+- The CLI [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) in "/usr/local/bin".
+- The CLI [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) in "/usr/local/bin".
+
 ### Terraform
 
 This Terraform setup stores its state in Amazon S3 and uses DynamoDB for locking. There is a bit of setup required to bootstrap that configuration. Yu can use [this repository](https://github.com/monterail/terraform-bootstrap-example) to use Terraform to do that bootstrap process. The `backend.tfvars` file in that repo should be modified as follows to work with this project:

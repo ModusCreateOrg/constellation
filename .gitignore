@@ -5,8 +5,10 @@
 .DS_Store
 .vagrant
 /env.sh
-/terraform/.terraform*
-/terraform/terraform.tfstate*
-/terraform/tf.plan
+
+#Ignore all but .tf files in /terraform
+/terraform/*
+!/terraform/*.tf
+
 __pycache__
 build/

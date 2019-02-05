@@ -28,7 +28,7 @@ variable "domain" {
 
 variable "host" {
   description = "Host name for Route 53 domain"
-  default     = "devops-infra-demo"
+  default     = "k8s-eks-scaling-demo"
 }
 
 variable "instance_type" {

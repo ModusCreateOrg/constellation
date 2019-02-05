@@ -1,5 +1,5 @@
 resource "aws_security_group" "outbound" {
-  name        = "infra-demo-outbound"
+  name        = "${var.project_name}-outbound"
   description = "Grants instances all outbound access"
   vpc_id      = "${module.vpc.vpc_id}"
 
@@ -14,12 +14,12 @@ resource "aws_security_group" "outbound" {
   }
 
   tags {
-    Project = "infra-demo"
+    Project = "${var.project_name}"
   }
 }
 
 resource "aws_security_group" "ssh" {
-  name        = "infra-demo-ssh"
+  name        = "${var.project_name}-ssh"
   description = "Grants access to ssh"
   vpc_id      = "${module.vpc.vpc_id}"
 
@@ -32,12 +32,12 @@ resource "aws_security_group" "ssh" {
   }
 
   tags {
-    Project = "infra-demo"
+    Project = "${var.project_name}"
   }
 }
 
 resource "aws_security_group" "web" {
-  name        = "infra-demo-web"
+  name        = "${var.project_name}-web"
   description = "Allows access to common web ports"
   vpc_id      = "${module.vpc.vpc_id}"
 
@@ -62,12 +62,12 @@ resource "aws_security_group" "web" {
   }
 
   tags {
-    Project = "infra-demo"
+    Project = "${var.project_name}"
   }
 }
 
 resource "aws_security_group" "icmp" {
-  name        = "infra-demo-icmp"
+  name        = "${var.project_name}-icmp"
   description = "Allows access to ping"
   vpc_id      = "${module.vpc.vpc_id}"
 
@@ -81,6 +81,6 @@ resource "aws_security_group" "icmp" {
   }
 
   tags {
-    Project = "infra-demo"
+    Project = "${var.project_name}"
   }
 }

@@ -6,10 +6,8 @@ terraform {
     # bucket = "tf-state.${project_name}.${aws_region}.${data.aws_caller_identity.current.account_id}"
     dynamodb_table = "TerraformStatelock-k8s-eks-scaling-demo"
 
-    #bucket = "my-terraform-bucket"
-
-    #dynamodb_table = "TerraformStatelock"
-    #region         = "us-east-1"
-    key = "terraform.tfstate"
+    bucket = "tf-state.k8s-eks-scaling-demo.us-west-2.976851222302"
+    region = "us-west-2"
+    key    = "terraform.tfstate"
   }
 }
