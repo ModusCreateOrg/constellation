@@ -14,19 +14,19 @@ export INPUT_ENABLED USE_TTY
 
 function docker-build(){
 	dir=$1; env=$2;	app=$3; ver=$4
-	OCWD=`pwd`
-	cd "${dir}"
+	OCWD=$(pwd)
+	cd "${dir}" || exit 1
 	docker build -t "k8s/${env}/${app}:${ver}" .
-	cd ${OCWD}
+	cd "${OCWD}" || exit 1
 }
 
 function docker-run(){
 	base=$1; env=$2; app=$3; ver=$4
 
 	echo Running container: "k8s/${env}/${app}:${ver}"
-	echo    local:${base}080 '-->' container:80
+	echo "   local:${base}080 '-->' container:80"
 	docker run \
-		-p ${base}080:80 \
+		-p "${base}080:80" \
 		-it "k8s/${env}/${app}:${ver}"
 }
 
@@ -34,9 +34,9 @@ function docker-shell(){
 	base=$1; env=$2; app=$3; ver=$4
 
 	echo Running container: "k8s/${env}/${app}:${ver}"
-	echo    local:${base}080 '-->' container:80
+	echo "   local:${base}080 '-->' container:80"
 	docker run \
-		-p ${base}080:80 \
+		-p "${base}080:80" \
 		-it "k8s/${env}/${app}:${ver}" \
 		/usr/bin/bash
 }

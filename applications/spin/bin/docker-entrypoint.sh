@@ -1,8 +1,7 @@
-!/bin/bash
+#!/bin/bash
 set -e
 
 if [ "$1" = 'nginx' ]; then
-	/usr/sbin/nginx $@
+	/usr/sbin/nginx 
 fi
 
-$@

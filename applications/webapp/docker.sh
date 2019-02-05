@@ -16,6 +16,7 @@ BASE_DIR="$DIR/../.."
 
 # shellcheck disable=SC1090
 . "$BASE_DIR/bin/common-docker.sh"
+# shellcheck disable=SC1090
 . "$DIR/bin/config.sh"
 
 op=${1:-build}
@@ -28,7 +29,7 @@ case "$op" in
        docker-build "${DIR}" "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
        ;;
      shell)
-       docker-shell "${APP_BASE}" "${APP_ENV}" "${APP_NAM}" "${APP_VER}" $*
+       docker-shell "${APP_BASE}" "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
        ;;
  esac
 
