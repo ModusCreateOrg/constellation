@@ -47,9 +47,19 @@ def wrap = { fn->
 properties([
     parameters([
         booleanParam(
-            name: 'Build_Docker', 
+            name: 'Build_Containers', 
             defaultValue: false, 
-            description: 'Build docker machines on this build?'
+            description: 'Build containers on this build?'
+        ),
+        booleanParam(
+            name: 'Push_Containers', 
+            defaultValue: false, 
+            description: 'Push containers to the repository on this build?'
+        ),
+        booleanParam(
+            name: 'Deploy_Containers', 
+            defaultValue: false, 
+            description: 'Deploy containers on this build?'
         ),
         booleanParam(
             name: 'Apply_Terraform', 
@@ -84,14 +94,14 @@ properties([
                             Allows you to override declared variables.
                             Put one variable per line, in JSON or HCL like this:
                             associate_public_ip_address = "true"'''
-        ), 
+        ) 
     ])
 ])
 
 stage('Preflight') {
        
     // Check CAPTCHA
-    def should_validate_captcha = params.Build_Docker || params.Apply_Terraform || params.Destroy_Terraform
+    def should_validate_captcha = params.Build_Containers || params.Push_Containers || params.Deploy_Containers || params.Apply_Terraform || params.Destroy_Terraform
 
     if (should_validate_captcha) {
         if (params.CAPTCHA_Guess == null || params.CAPTCHA_Guess == "") {
@@ -168,6 +178,36 @@ if (params.Apply_Terraform || params.Destroy_Terraform) {
     } catch(err) { // timeout reached or other error
         echo err.toString()
         currentBuild.result = 'ABORTED'
+    }
+}
+
+if (params.Build_Containers) {
+    stage('Build Application Containers'){
+        node {
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/build-applications.sh")
+            }   
+        }
+    }
+}
+
+if (params.Push_Containers) {
+    stage('Push Application Containers'){
+        node {
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/push-applications.sh")
+            }   
+        }
+    }
+}
+
+if (params.Deploy_Containers) {
+    stage('Deploy Application Containers'){
+        node {
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/deploy-applications.sh")
+            }   
+        }
     }
 }
 

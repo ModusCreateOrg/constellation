@@ -44,6 +44,7 @@ A `Jenkinsfile` is provided that will allow Jenkins to execute Terraform. In ord
 #### Requirements
 - The CLI [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) in "/usr/local/bin".
 - The CLI [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) in "/usr/local/bin".
+- An ECR repository to store the containers.
 
 ### Terraform
 
@@ -73,6 +74,9 @@ These commands will then set up cloud resources using terraform:
 
 This assumes that you already have a Route 53 domain in your AWS account created.
 You need to either edit variables.tf to match your domain and AWS zone or specify these values as command line `var` parameters.
+
+### Development Notes
+- The ECR repositories are not currently created by Terraform. Depending on the goals of the demo they could be managed by Terraform.
 
 # Modus Create
 

@@ -17,7 +17,14 @@ BASE_DIR="$DIR/../.."
 # shellcheck disable=SC1090
 . "$BASE_DIR/bin/common-docker.sh"
 # shellcheck disable=SC1090
+. "$BASE_DIR/bin/common-k8s.sh"
+# shellcheck disable=SC1090
 . "$DIR/bin/config.sh"
+# shellcheck disable=SC1090
+. "$BASE_DIR/env.sh"
+# shellcheck disable=SC1090
+. "$BASE_DIR/bin/config-k8s.sh"
+
 
 op=${1:-build}
 
@@ -30,6 +37,12 @@ case "$op" in
        ;;
      shell)
        docker-shell "${APP_BASE}" "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
+       ;;     
+     push)
+       docker-push "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
+       ;;
+     deploy)
+       k8s-deploy "${APP_DEST}" "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
        ;;
  esac
 

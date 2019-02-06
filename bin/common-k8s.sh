@@ -12,9 +12,12 @@ test -t 1 && INPUT_ENABLED="true" || INPUT_ENABLED="false"
 
 export INPUT_ENABLED USE_TTY
 
-export APP_ENV=dev
-export APP_NAM=webapp
-export APP_VER=1.0.0
-export APP_BASE=9
-export APP_DEST="<destination>"
+function k8s-deploy(){
+	dest=$1; env=$2; app=$3; ver=$4
+	container-name "${env}" "${app}" "${ver}" 
+
+	echo DOCKER DEPLOY: "${CNAME} --> ${dest}"
+	# shellcheck disable=SC2091
+	aws eks --region "us-west-2" update-kubeconfig --name "${CLUSTER_NAME}"
+}
 

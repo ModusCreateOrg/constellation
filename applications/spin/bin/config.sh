@@ -14,6 +14,7 @@ export INPUT_ENABLED USE_TTY
 
 export APP_ENV=dev
 export APP_NAM=spin
-export APP_VER=v1.0.0
+export APP_VER=1.0.0
 export APP_BASE=8
+export APP_DEST="<destination>"
 
