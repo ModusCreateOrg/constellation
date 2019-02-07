@@ -13,56 +13,53 @@ test -t 1 && INPUT_ENABLED="true" || INPUT_ENABLED="false"
 export INPUT_ENABLED USE_TTY
 
 function docker-build(){
-	dir=$1; env=$2;	app=$3; ver=$4
-	container-name "${env}" "${app}" "${ver}" 
-	echo DOCKER BUILD: "${CNAME}"
-	OCWD=$(pwd)
-	cd "${dir}" || exit 1
+	env=$1;	app=$2; ver=$3
+	image-name "${env}" "${app}" "${ver}" 
+	echo DOCKER BUILD: "${IMAGE_NAME}"
 	docker build \
-		-t "${CNAME}" \
-		-t "${REPO_BASE_URI}/${CNAME}" \
+		-t "${IMAGE_NAME}" \
+		-t "${REPO_BASE_URI}/${IMAGE_NAME}" \
 		.
-	cd "${OCWD}" || exit 1
 }
 
 function docker-push(){
 	env=$1; app=$2; ver=$3
-	container-name "${env}" "${app}" "${ver}" 
+	image-name "${env}" "${app}" "${ver}" 
 
-	echo DOCKER PUSH: "${CNAME}"
+	echo DOCKER PUSH: "${IMAGE_NAME}"
 	# shellcheck disable=SC2091
 	$(aws ecr get-login --no-include-email)
-	docker push "${REPO_BASE_URI}/${CNAME}"
+	docker push "${REPO_BASE_URI}/${IMAGE_NAME}"
 }
 
 function docker-run(){
 	base=$1; env=$2; app=$3; ver=$4
-	container-name "${env}" "${app}" "${ver}" 
+	image-name "${env}" "${app}" "${ver}" 
 
-	echo DOCKER RUN: "${CNAME}"
+	echo DOCKER RUN: "${IMAGE_NAME}"
 	echo "   local:${base}080 '-->' container:80"
 	docker run \
 		-p "${base}080:80" \
-		-it "${CNAME}"
+		-it "${IMAGE_NAME}"
 }
 
 function docker-shell(){
-	base=$1; env=$2; app=$3; ver=$4
-	container-name "${env}" "${app}" "${ver}" 
+	env=$1; app=$2; ver=$3; base=$4
+	image-name "${env}" "${app}" "${ver}" 
 
-	echo DOCKER SHELL: "${CNAME}"
+	echo DOCKER SHELL: "${IMAGE_NAME}"
 	echo "   local:${base}080 '-->' container:80"
 	docker run \
 		-p "${base}080:80" \
-		-it "${CNAME}" \
+		-it "${IMAGE_NAME}" \
 		/usr/bin/bash
 }
 
 function docker-deploy(){
-	dest=$1; env=$2; app=$3; ver=$4
-	container-name "${env}" "${app}" "${ver}" 
+	env=$1; app=$2; ver=$3
+	image-name "${env}" "${app}" "${ver}" 
 
-	echo DOCKER DEPLOY: "${CNAME} --> ${dest}"
+	echo DOCKER DEPLOY: "${IMAGE_NAME}"
 	# shellcheck disable=SC2091
 	$(aws eks --region "us-west-2" update-kubeconfig --name "k8s-eks-scaling-demo-cluster")
 }

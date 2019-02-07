@@ -39,6 +39,7 @@ function get_docker_terraform {
         ${USE_TTY}
         --env-file $ENV_FILE
         --mount type=bind,source=${BASE_DIR}/terraform,target=${TF_DIR}
+        --mount type=bind,source=${BASE_DIR}/bin,target=/app/bin
         --mount type=bind,source=${BASE_DIR}/applications,target=/app/applications
         --mount type=bind,source=${BUILD_DIR},target=/app/build
         --mount type=bind,source=${HOME}/.aws,target=/root/.aws
@@ -60,5 +61,15 @@ function init_terraform() {
         #shellcheck disable=SC2174
         mkdir -p -m 0700 ~/.ssh
         ssh-keygen -t rsa -b 2048 -P '' -f ~/.ssh/id_rsa
+    fi
+    if [[ ! -x /usr/local/bin/aws-iam-authenticator ]]; then
+        echo "Installing: aws-iam-authenticator"
+        curl -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
+        chmod 755 /usr/local/bin/aws-iam-authenticator
+    fi
+    if [[ ! -x /usr/local/bin/kubectl ]]; then
+        echo "Installing: kubectl"
+        curl -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl
+        chmod 755 /usr/local/bin/kubectl
     fi
 }

@@ -17,9 +17,17 @@ BASE_DIR="$DIR/.."
 #shellcheck disable=SC1090
 . "$BASE_DIR/env.sh"
 
-cd "$BASE_DIR"
+# ARGS
+app_name=${1:-all}
+op=${2:-build}
 
-# shellcheck disable=SC1090
-./applications/spin/build.sh deploy
-# shellcheck disable=SC1090
-./applications/webapp/build.sh deploy
+if [ "${app_name}" = "all" ]; then
+	apps=$(find "${BASE_DIR}/applications" -type d -maxdepth 1 -exec basename {} \; | grep -v applications)
+	for app in ${apps}; do
+   		# shellcheck disable=SC1090
+		. "${DIR}/build-app.sh" "${app}" "${op}"
+	done
+else
+	# shellcheck disable=SC1090
+	. "${DIR}/build-app.sh" "${app_name}" "${op}"
+fi

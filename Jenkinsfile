@@ -47,29 +47,44 @@ def wrap = { fn->
 properties([
     parameters([
         booleanParam(
-            name: 'Build_Containers', 
+            name: 'Destroy_Terraform', 
             defaultValue: false, 
-            description: 'Build containers on this build?'
-        ),
-        booleanParam(
-            name: 'Push_Containers', 
-            defaultValue: false, 
-            description: 'Push containers to the repository on this build?'
-        ),
-        booleanParam(
-            name: 'Deploy_Containers', 
-            defaultValue: false, 
-            description: 'Deploy containers on this build?'
+            description: 'Destroy Terraform resources?'
         ),
         booleanParam(
             name: 'Apply_Terraform', 
             defaultValue: false, 
             description: 'Apply Terraform plan on this build?'
         ),
+        string(
+            name: 'Application', 
+            defaultValue: 'all', 
+            description: 'The application to build.'
+        ),
         booleanParam(
-            name: 'Destroy_Terraform', 
+            name: 'Build_Container', 
             defaultValue: false, 
-            description: 'Destroy Terraform resources?'
+            description: 'Build container/s on this build?'
+        ),
+        booleanParam(
+            name: 'Push_Container', 
+            defaultValue: false, 
+            description: 'Push container/s to the repository on this build?'
+        ),
+        booleanParam(
+            name: 'Deploy_Container', 
+            defaultValue: false, 
+            description: 'Deploy container/s on this build?'
+        ),
+        booleanParam(
+            name: 'Update_Container', 
+            defaultValue: false, 
+            description: 'Update container/s on this build?'
+        ),
+        booleanParam(
+            name: 'Delete_Container', 
+            defaultValue: false, 
+            description: 'Delete container/s on this build?'
         ),
         string(
             name: 'CAPTCHA_Guess', 
@@ -101,7 +116,7 @@ properties([
 stage('Preflight') {
        
     // Check CAPTCHA
-    def should_validate_captcha = params.Build_Containers || params.Push_Containers || params.Deploy_Containers || params.Apply_Terraform || params.Destroy_Terraform
+    def should_validate_captcha =  params.Build_Container || params.Push_Container || params.Deploy_Container || params.Updatey_Container || params.Delete_Container || params.Apply_Terraform || params.Destroy_Terraform
 
     if (should_validate_captcha) {
         if (params.CAPTCHA_Guess == null || params.CAPTCHA_Guess == "") {
@@ -181,31 +196,51 @@ if (params.Apply_Terraform || params.Destroy_Terraform) {
     }
 }
 
-if (params.Build_Containers) {
+if (params.Build_Container) {
     stage('Build Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build-applications.sh")
+                sh ("./bin/build.sh ${params.Application} build")
             }   
         }
     }
 }
 
-if (params.Push_Containers) {
+if (params.Push_Container) {
     stage('Push Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/push-applications.sh")
+                sh ("./bin/build.sh ${params.Application} push")
             }   
         }
     }
 }
 
-if (params.Deploy_Containers) {
+if (params.Deploy_Container) {
     stage('Deploy Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/deploy-applications.sh")
+                sh ("./bin/build.sh ${params.Application} deploy")
+            }   
+        }
+    }
+}
+
+if (params.Update_Container) {
+    stage('Update Application Containers'){
+        node {
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/build.sh ${params.Application} update")
+            }   
+        }
+    }
+}
+
+if (params.Delete_Container) {
+    stage('Delete Application Containers'){
+        node {
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/build.sh ${params.Application} delete")
             }   
         }
     }

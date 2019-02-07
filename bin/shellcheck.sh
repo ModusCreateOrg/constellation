@@ -11,4 +11,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$DIR/.."
 
 # shellcheck disable=SC2046
-shellcheck $(find "${BASE_DIR}" -name '*.sh') env.sh.sample
+shellcheck $(find "${BASE_DIR}" -name '*.sh')
+
+

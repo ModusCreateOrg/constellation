@@ -15,7 +15,12 @@ export INPUT_ENABLED USE_TTY
 export CLUSTER_NAME="k8s-eks-scaling-demo-cluster"
 export REPO_BASE_URI="976851222302.dkr.ecr.us-west-2.amazonaws.com/k8s-eks-scaling-demo-repo"
 
-function container-name(){
+function image-name(){
 	env=$1;	app=$2; ver=$3
-	export CNAME="k8s-${env}-${app}:${ver}"
+	export IMAGE_NAME="k8s-${env}-${app}:${ver}"
+}
+
+function pod-name(){
+	env=$1;	app=$2
+	export POD_NAME="k8s-${env}-${app}"
 }
