@@ -22,53 +22,58 @@ BASE_DIR="$DIR/.."
 # shellcheck disable=SC1090
 . "$BASE_DIR/env.sh"
 # shellcheck disable=SC1090
-. "$DIR/config-k8s.sh"
+. "$BASE_DIR/config/k8s.sh"
 
 # ARGS
-app_name=${1:-}
+dir_name=${1:-}
 op=${2:-build}
 
-APP_DIR="$BASE_DIR/applications/${app_name}"
+APP_DIR="$BASE_DIR/applications/${dir_name}"
 cd "${APP_DIR}" || echo "Can not find: ${APP_DIR}"
-#echo "Building in: $(pwd)"
+echo "Building in: $(pwd)"
 # shellcheck disable=SC1091
-source ./config.sh
+source ./config-app.sh
 
-case "$op" in
-     run)
-       docker-run "${APP_ENV}" "${APP_NAM}" "${APP_VER}" "${APP_BASE}" 
-       ;;   
-     build)
-       docker-build "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
-       ;;
-     shell)
-       docker-shell "${APP_ENV}" "${APP_NAM}" "${APP_VER}" "${APP_BASE}" 
-       ;;
-     push)
-       docker-push "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
-       ;;
-     deploy)
-       k8s-deploy "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
-       ;;
-     update)
-       k8s-update "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
-       ;;
-     delete)
-       k8s-delete "${APP_ENV}" "${APP_NAM}" "${APP_VER}"
-       ;;
-     image-name)
-        image-name "${APP_ENV}" "${APP_NAM}" "${APP_VER}" 
-        echo "${IMAGE_NAME}"
-       ;;
-     pod-name)
-        pod-name "${APP_ENV}" "${APP_NAM}"
-        echo "${POD_NAME}"
-       ;;
-     version)
-        echo "${APP_VER}"
-       ;;
- esac
-
-
-
+  case "$op" in
+    run)
+      docker-run
+      ;;   
+    build)
+      docker-build
+      ;;
+    shell)
+      docker-shell
+      ;;
+    push)
+      docker-push
+      ;;
+    deploy)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+          k8s-deploy
+        else
+          echo "This command (${op}) is not a valid operation for an image-only application!"
+          exit 1
+        fi
+        ;;
+    update)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+          k8s-update
+        else
+          echo "This command (${op}) is not a valid operation for an image-only application!"
+          exit 1
+        fi
+        ;;
+    delete)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+          k8s-delete
+        else
+          echo "This command (${op}) is not a valid operation for an image-only application!"
+          exit 1
+        fi
+      ;;
+    *)
+      echo "This command (${op}) is not a valid operation!"
+      exit 1
+      ;;
+esac
 

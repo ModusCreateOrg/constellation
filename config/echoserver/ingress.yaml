@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: echoserver
+  namespace: echoserver
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/subnets: subnet-0944f742774abe16b,subnet-09942c326925a75b2,subnet-0db547465a7c52916
+    alb.ingress.kubernetes.io/tags: Project=k8s-eks-scaling-demo
+
+spec:
+  rules:
+    - host: k8s-eks-scaling-demo-echo.modus.app
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: echoserver
+              servicePort: 80

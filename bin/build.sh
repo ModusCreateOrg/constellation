@@ -18,16 +18,20 @@ BASE_DIR="$DIR/.."
 . "$BASE_DIR/env.sh"
 
 # ARGS
-app_name=${1:-all}
+dir_name=${1:-all}
 op=${2:-build}
 
-if [ "${app_name}" = "all" ]; then
-	apps=$(find "${BASE_DIR}/applications" -type d -maxdepth 1 -exec basename {} \; | grep -v applications)
-	for app in ${apps}; do
+if [ "${dir_name}" = "all" ]; then
+	if [ "${op}" == "run" ] || [ "${op}" == "shell" ]; then
+		echo "Can't run the command (${op}) for all applications!"
+		exit 1
+	fi
+	dirs=$(find "${BASE_DIR}/applications" -type d -maxdepth 1 -exec basename {} \; | grep -v applications | grep -v '^_')
+	for dir in ${dirs}; do
    		# shellcheck disable=SC1090
-		. "${DIR}/build-app.sh" "${app}" "${op}"
+		. "${DIR}/build-app.sh" "${dir}" "${op}"
 	done
 else
 	# shellcheck disable=SC1090
-	. "${DIR}/build-app.sh" "${app_name}" "${op}"
+	. "${DIR}/build-app.sh" "${dir_name}" "${op}"
 fi

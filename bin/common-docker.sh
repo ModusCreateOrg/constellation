@@ -13,54 +13,37 @@ test -t 1 && INPUT_ENABLED="true" || INPUT_ENABLED="false"
 export INPUT_ENABLED USE_TTY
 
 function docker-build(){
-	env=$1;	app=$2; ver=$3
-	image-name "${env}" "${app}" "${ver}" 
-	echo DOCKER BUILD: "${IMAGE_NAME}"
+	echo DOCKER BUILD: "${IMAGE_NAME}:${IMAGE_VERSION}"
 	docker build \
-		-t "${IMAGE_NAME}" \
-		-t "${REPO_BASE_URI}/${IMAGE_NAME}" \
+		-t "${IMAGE_NAME}:${IMAGE_VERSION}" \
+		-t "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}" \
 		.
 }
 
 function docker-push(){
-	env=$1; app=$2; ver=$3
-	image-name "${env}" "${app}" "${ver}" 
-
-	echo DOCKER PUSH: "${IMAGE_NAME}"
+	echo DOCKER PUSH: "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
 	# shellcheck disable=SC2091
-	$(aws ecr get-login --no-include-email)
-	docker push "${REPO_BASE_URI}/${IMAGE_NAME}"
+	aws ecr get-login --no-include-email
+	docker push "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
 }
 
 function docker-run(){
-	base=$1; env=$2; app=$3; ver=$4
-	image-name "${env}" "${app}" "${ver}" 
-
-	echo DOCKER RUN: "${IMAGE_NAME}"
-	echo "   local:${base}080 '-->' container:80"
-	docker run \
-		-p "${base}080:80" \
-		-it "${IMAGE_NAME}"
+	echo DOCKER RUN: "${IMAGE_NAME}:${IMAGE_VERSION}"
+	if [ "${HAS_PORT}" == 'true' ]; then
+		echo "   local:${HOST_PORT} '-->' container:${CONTAINER_PORT}"
+		docker run -it "${IMAGE_NAME}:${IMAGE_VERSION}"
+	else
+		docker run -p "${HOST_PORT}:${CONTAINER_PORT}" -it "${IMAGE_NAME}:${IMAGE_VERSION}"
+	fi
 }
 
 function docker-shell(){
-	env=$1; app=$2; ver=$3; base=$4
-	image-name "${env}" "${app}" "${ver}" 
-
-	echo DOCKER SHELL: "${IMAGE_NAME}"
-	echo "   local:${base}080 '-->' container:80"
-	docker run \
-		-p "${base}080:80" \
-		-it "${IMAGE_NAME}" \
-		/usr/bin/bash
-}
-
-function docker-deploy(){
-	env=$1; app=$2; ver=$3
-	image-name "${env}" "${app}" "${ver}" 
-
-	echo DOCKER DEPLOY: "${IMAGE_NAME}"
-	# shellcheck disable=SC2091
-	$(aws eks --region "us-west-2" update-kubeconfig --name "k8s-eks-scaling-demo-cluster")
+	echo DOCKER SHELL: "${IMAGE_NAME}:${IMAGE_VERSION}"
+	if [ "${HAS_PORT}" == 'true' ]; then
+		echo "   local:${HOST_PORT} '-->' container:${CONTAINER_PORT}"
+		docker run -it "${IMAGE_NAME}:${IMAGE_VERSION}" /usr/bin/bash
+	else
+		docker run -p "${HOST_PORT}:${CONTAINER_PORT}" -it "${IMAGE_NAME}:${IMAGE_VERSION}" /usr/bin/bash
+	fi
 }
 

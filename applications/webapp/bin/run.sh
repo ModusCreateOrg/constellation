@@ -14,7 +14,7 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # shellcheck disable=SC1090
-. "${DIR}/config.sh"
+. "${DIR}/../config-app.sh"
 
 /usr/sbin/nginx
 /usr/bin/tail -f /dev/null

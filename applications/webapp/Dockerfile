@@ -11,6 +11,9 @@ RUN	yum install -y https://centos7.iuscommunity.org/ius-release.rpm \
 		postgresql-devel \
 	&& yum clean all
 
+# Copy in config-app
+ADD config-app.sh /app/config-app.sh
+
 # Copy in bin
 ADD bin /app/bin
 

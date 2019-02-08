@@ -37,7 +37,6 @@ verb=${1:?You must specify a verb: plan, plan-destroy, apply}
 # http://redsymbol.net/articles/bash-exit-traps/
 trap clean_root_owned_docker_files EXIT
 
-
 function plan() {
     local extra
     local output

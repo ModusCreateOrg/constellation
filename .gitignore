@@ -10,5 +10,7 @@
 /terraform/*
 !/terraform/*.tf
 
+/config/alb-ingress-controller.yaml
+
 __pycache__
 build/

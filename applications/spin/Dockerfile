@@ -17,6 +17,9 @@ RUN yum install -y https://centos7.iuscommunity.org/ius-release.rpm \
 # Copy in your requirements file
 ADD src/requirements.txt /app/requirements.txt
 
+# Copy in config-app
+ADD config-app.sh /app/config-app.sh
+
 # Copy in bin
 ADD bin /app/bin
 

@@ -12,9 +12,13 @@ test -t 1 && INPUT_ENABLED="true" || INPUT_ENABLED="false"
 
 export INPUT_ENABLED USE_TTY
 
-export APP_ENV=dev
-export APP_NAM=webapp
-export APP_VER=1.0.0
-export APP_BASE=9
-export APP_DEST="<destination>"
+export IS_DEPLOYABLE="true"
+export HAS_PORT="true"
+
+export APPLICATION_NAME=webapp
+export IMAGE_NAME=k8s-dev-webapp
+export IMAGE_VERSION=1.0.0
+export REPOSITORY_BASE="976851222302.dkr.ecr.us-west-2.amazonaws.com/k8s-eks-scaling-demo-repo"
+export CONTAINER_PORT="80"
+export HOST_PORT=8081
 
