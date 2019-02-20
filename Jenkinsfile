@@ -109,7 +109,17 @@ properties([
                             Allows you to override declared variables.
                             Put one variable per line, in JSON or HCL like this:
                             associate_public_ip_address = "true"'''
-        ) 
+        ),
+        string(
+            name: 'Build_Command_Arguments', 
+            defaultValue: '', 
+            description: 'The arguments to the build command.'
+        ),
+        booleanParam(
+            name: 'Run_Build_Command', 
+            defaultValue: false, 
+            description: 'Run build.sh with the above arguments for debugging.'
+        )
     ])
 ])
 
@@ -221,6 +231,7 @@ if (params.Deploy_Container) {
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
                 sh ("./bin/build.sh ${params.Application} deploy")
+                sh ("./bin/build.sh ${params.Application} describe-pod")
             }   
         }
     }
@@ -231,6 +242,7 @@ if (params.Update_Container) {
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
                 sh ("./bin/build.sh ${params.Application} update")
+                sh ("./bin/build.sh ${params.Application} describe-pod")
             }   
         }
     }
@@ -241,6 +253,16 @@ if (params.Delete_Container) {
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
                 sh ("./bin/build.sh ${params.Application} delete")
+                sh ("./bin/build.sh not-used list-pods")
+            }   
+        }
+    }
+}
+if (params.Run_Build_Command) {
+    stage('Run Build Command'){
+        node {
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/build.sh ${Build_Command_Arguments}")
             }   
         }
     }

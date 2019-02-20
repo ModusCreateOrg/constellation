@@ -18,8 +18,6 @@ BASE_DIR="$DIR/.."
 . "$DIR/common-k8s.sh"
 # shellcheck disable=SC1090
 . "$BASE_DIR/env.sh"
-# shellcheck disable=SC1090
-. "$BASE_DIR/config/k8s.sh"
 
 APP_NAME=echoserver
 

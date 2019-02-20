@@ -14,15 +14,15 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$DIR/.."
 
-
+# shellcheck disable=SC1090
+. "$BASE_DIR/env.sh"
 # shellcheck disable=SC1090
 . "$DIR/common-docker.sh"
 # shellcheck disable=SC1090
 . "$DIR/common-k8s.sh"
-# shellcheck disable=SC1090
-. "$BASE_DIR/env.sh"
-# shellcheck disable=SC1090
-. "$BASE_DIR/config/k8s.sh"
+
+CLUSTER_NAME="$(get-cluster-name)"
+export CLUSTER_NAME
 
 # ARGS
 dir_name=${1:-}
@@ -51,7 +51,7 @@ source ./config-app.sh
         if [ "$IS_DEPLOYABLE" == 'true' ]; then  
           k8s-deploy
         else
-          echo "This command (${op}) is not a valid operation for an image-only application!"
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
           exit 1
         fi
         ;;
@@ -59,7 +59,23 @@ source ./config-app.sh
         if [ "$IS_DEPLOYABLE" == 'true' ]; then  
           k8s-update
         else
-          echo "This command (${op}) is not a valid operation for an image-only application!"
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
+          exit 1
+        fi
+        ;;
+    list-pods)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then
+          k8s-list-pods
+        else
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
+          exit 1
+        fi
+        ;;
+    describe-pod)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then
+          k8s-describe-pod
+        else
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
           exit 1
         fi
         ;;
@@ -67,7 +83,7 @@ source ./config-app.sh
         if [ "$IS_DEPLOYABLE" == 'true' ]; then  
           k8s-delete
         else
-          echo "This command (${op}) is not a valid operation for an image-only application!"
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
           exit 1
         fi
       ;;

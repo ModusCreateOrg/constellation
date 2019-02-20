@@ -5,7 +5,7 @@
 
 
 TF_VERSION="0.11.11"
-TF_REPOSITORY="dranderson/terraform"
+TF_REPOSITORY="moduscreate/terraform"
 
 # TF_DIR is from the perspective of the Terraform docker container
 TF_DIR="/app/terraform"

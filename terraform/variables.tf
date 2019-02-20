@@ -71,8 +71,3 @@ variable "associate_public_ip_address" {
   description = "Associate public IP address with instances? False by default for security"
   default     = false
 }
-
-variable "project_name" {
-  description = "Project name"
-  default     = "k8s-eks-scaling-demo"
-}

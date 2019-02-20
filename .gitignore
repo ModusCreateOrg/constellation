@@ -4,11 +4,14 @@
 *~
 .DS_Store
 .vagrant
+.kube
 /env.sh
 
 #Ignore all but .tf files in /terraform
 /terraform/*
 !/terraform/*.tf
+!/terraform/variables-local.tf.sample
+/terraform/variables-local.tf
 
 /config/alb-ingress-controller.yaml
 

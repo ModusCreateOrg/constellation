@@ -18,4 +18,4 @@ export HAS_PORT="false"
 export APPLICATION_NAME=terraform
 export IMAGE_NAME=terraform
 export IMAGE_VERSION=0.11.11
-export REPOSITORY_BASE="dranderson"
+export REPOSITORY_BASE="moduscreate"

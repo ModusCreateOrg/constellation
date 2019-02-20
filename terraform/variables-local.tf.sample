@@ -1,0 +1,4 @@
+variable "project_name" {
+  description = "Project name"
+  default     = "k8s-eks-scaling-demo"
+}

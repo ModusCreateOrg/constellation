@@ -21,6 +21,7 @@ cd "$BASE_DIR"
 clean_root_owned_docker_files
 git clean -fdx
 cp env.sh.sample env.sh
+cp terraform/variables-local.tf.sample terraform/variables-local.tf
 rm -rf build
 mkdir -p build
 
