@@ -43,6 +43,7 @@ A `Jenkinsfile` is provided that will allow Jenkins to execute Terraform. In ord
 
 #### Requirements
 - An ECR repository to store the images.
+- The command line utility 'jq'.
 - aws-iam-authenticator
 	```
 	curl -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
@@ -86,6 +87,7 @@ You need to either edit variables.tf to match your domain and AWS zone or specif
 
 ### Development Notes
 - The ECR repositories are not currently created by Terraform. Depending on the goals of the demo they could be managed by Terraform.
+- Run './bin/build.sh help' for help on building applications.
 
 # Modus Create
 

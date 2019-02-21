@@ -19,7 +19,10 @@ BASE_DIR="$DIR/.."
 # shellcheck disable=SC1090
 . "$DIR/common-docker.sh"
 # shellcheck disable=SC1090
+. "$DIR/common-awscli.sh"
+# shellcheck disable=SC1090
 . "$DIR/common-k8s.sh"
+
 
 CLUSTER_NAME="$(get-cluster-name)"
 export CLUSTER_NAME
@@ -35,18 +38,23 @@ echo "Building in: $(pwd)"
 source ./config-app.sh
 
   case "$op" in
+    # Run this application locally exposing a port if appropriate
     run)
       docker-run
       ;;   
+    # Build the image for this application
     build)
       docker-build
       ;;
+    # Run this application locally and open a shell. It exposes the port if appropriate.
     shell)
       docker-shell
       ;;
+    # Push the image for this application to the repository
     push)
       docker-push
       ;;
+    # Deploy this application to the cluster
     deploy)
         if [ "$IS_DEPLOYABLE" == 'true' ]; then  
           k8s-deploy
@@ -55,6 +63,16 @@ source ./config-app.sh
           exit 1
         fi
         ;;
+    # Add this application to the DNS
+    add-dns)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+          add-elb-to-route53
+        else
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
+          exit 1
+        fi
+        ;;
+    # Update the image for this application which when it is deployed on the cluster
     update)
         if [ "$IS_DEPLOYABLE" == 'true' ]; then  
           k8s-update
@@ -63,6 +81,7 @@ source ./config-app.sh
           exit 1
         fi
         ;;
+    # List all of the PODs in the cluster
     list-pods)
         if [ "$IS_DEPLOYABLE" == 'true' ]; then
           k8s-list-pods
@@ -71,6 +90,7 @@ source ./config-app.sh
           exit 1
         fi
         ;;
+    # Describe the POD for this application
     describe-pod)
         if [ "$IS_DEPLOYABLE" == 'true' ]; then
           k8s-describe-pod
@@ -79,6 +99,7 @@ source ./config-app.sh
           exit 1
         fi
         ;;
+    # Delete this application from the cluster
     delete)
         if [ "$IS_DEPLOYABLE" == 'true' ]; then  
           k8s-delete
@@ -86,6 +107,10 @@ source ./config-app.sh
           echo "This command (${op}) is not a valid operation for a non-deployable application!"
           exit 1
         fi
+      ;;
+    # A workspace to run debugging code.
+    debug)
+        add-elb-to-route53
       ;;
     *)
       echo "This command (${op}) is not a valid operation!"

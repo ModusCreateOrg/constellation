@@ -16,10 +16,20 @@ BASE_DIR="$DIR/.."
 
 #shellcheck disable=SC1090
 . "$BASE_DIR/env.sh"
+# shellcheck disable=SC1090
+. "$DIR/build-help.sh"
 
-# ARGS
+# IS HELP
+if [ "${1:-all}" == "help" ]; then
+	print-help
+	exit 0
+fi
+
+# GET ARGS
 dir_name=${1:-all}
 op=${2:-build}
+
+
 
 if [ "${dir_name}" = "all" ]; then
 	if [ "${op}" == "run" ] || [ "${op}" == "shell" ]; then
