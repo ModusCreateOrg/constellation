@@ -88,12 +88,20 @@ function apply() {
 case "$verb" in
 plan)
   Message="Executing terraform plan."
+  rm -f /tmp/isDestroy
   ;;
 plan-destroy)
   Message="Executing terraform plan, with destroy."
+  touch /tmp/isDestroy
   ;;
-apply)
+apply) 
   Message="Executing terraform apply."
+  if [ -f /tmp/isDestroy ]; then
+    echo "Deleting all PODs from cluster since this is a destroy !!!"
+    "${DIR}/build.sh" all idempotent-delete
+    sleep 20 # Safety wait for theELBs to be deleted
+  fi
+  rm -f /tmp/isDestroy
   ;;
 *)
   echo 'Unrecognized verb "'"$verb"'" specified. Use plan, plan-destroy, or apply'

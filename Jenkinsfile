@@ -30,6 +30,7 @@ def get_captcha(Long hash_const, int max) {
 def prepEnv = {
     sh ("""
         cp env.sh.sample env.sh
+        cp terraform/variables-local.tf.sample terraform/variables-local.tf
         rm -rf build
         mkdir build
     """)
@@ -75,6 +76,11 @@ properties([
             name: 'Deploy_Container', 
             defaultValue: false, 
             description: 'Deploy container/s on this build?'
+        ),
+        booleanParam(
+            name: 'Add_To_DNS', 
+            defaultValue: false, 
+            description: 'Add the application ELB to DNS?'
         ),
         booleanParam(
             name: 'Update_Container', 
@@ -126,7 +132,7 @@ properties([
 stage('Preflight') {
        
     // Check CAPTCHA
-    def should_validate_captcha =  params.Build_Container || params.Push_Container || params.Deploy_Container || params.Updatey_Container || params.Delete_Container || params.Apply_Terraform || params.Destroy_Terraform
+    def should_validate_captcha =  params.Build_Container || params.Push_Container || params.Deploy_Container || params.Updatey_Container || params.Delete_Container || params.Apply_Terraform || params.Destroy_Terraform || params.Add_To_DNS
 
     if (should_validate_captcha) {
         if (params.CAPTCHA_Guess == null || params.CAPTCHA_Guess == "") {
@@ -237,6 +243,20 @@ if (params.Deploy_Container) {
     }
 }
 
+if (params.Add_To_DNS) {
+
+    stage('ADD Application to DNS'){
+        node {
+            if (params.Deploy_Container) {
+                sh ("sleep 20")
+            }
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/build.sh ${params.Application} add-dns")
+            }   
+        }
+    }
+}
+
 if (params.Update_Container) {
     stage('Update Application Containers'){
         node {
@@ -252,8 +272,8 @@ if (params.Delete_Container) {
     stage('Delete Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} delete")
-                sh ("./bin/build.sh not-used list-pods")
+                sh ("./bin/build.sh ${params.Application} idempotent-delete")
+                sh ("./bin/build.sh ${params.Application} list-pods")
             }   
         }
     }

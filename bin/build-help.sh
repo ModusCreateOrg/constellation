@@ -38,6 +38,8 @@ COMMANDS:
 
 'delete'   - Delete this application from the cluster.
 
+'idempotent-delete' - Delete this application from the cluster without failing if the application is not deployed.
+ 
 EOF
 
 }

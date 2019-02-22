@@ -108,6 +108,15 @@ source ./config-app.sh
           exit 1
         fi
       ;;
+    # Delete this application from the cluster idempotently.
+    idempotent-delete)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+          k8s-delete || echo "INFO: Trapped undeployed application: ${dir_name}"
+        else
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
+          exit 1
+        fi
+      ;;
     # A workspace to run debugging code.
     debug)
         add-elb-to-route53

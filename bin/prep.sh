@@ -25,18 +25,3 @@ cp terraform/variables-local.tf.sample terraform/variables-local.tf
 rm -rf build
 mkdir -p build
 
-if [[ ! -x /usr/local/bin/aws-iam-authenticator ]]; then
-    echo "Installing: aws-iam-authenticator"
-    curl -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator \
-    chmod 755 /usr/local/bin/aws-iam-authenticator
-else
-    echo "Found: aws-iam-authenticator"
-fi
-if [[ ! -x /usr/local/bin/kubectl ]]; then
-    echo "Installing: kubectl"
-    curl -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl
-    chmod 755 /usr/local/bin/kubectl
-else
-    echo "Found: kubectl"
-fi
-

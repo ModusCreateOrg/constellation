@@ -15,11 +15,6 @@ export INPUT_ENABLED USE_TTY
 export ALB_NAME="k83-demo-alb"
 export VPC_NAME="${PROJECT_NAME}-vpc"
 
-###
-#Note: the lowercase vars are not exported and intended to be use as local variables in this file.
-#      Doing so would cause the guards to work incorrectly with iteration.
-###
-
 
 function get-vpc-id(){
 	if [ -z ${VPC_ID+x} ]; then
@@ -29,7 +24,7 @@ function get-vpc-id(){
 			| jq "${vpc_id_query}" \
 		 	|sed 's/"//g'  \
 		)"
-		export VPC_ID #The EXPORT is ok here since there is only one value per project.
+		export VPC_ID
 		echo "The VPC ID is ${VPC_ID}"
 	fi
 }
@@ -41,38 +36,34 @@ function get-the-target-group-name(){
 }
 
 function get-the-elb-name(){
-	if [ -z ${the_elb_name+x} ]; then
-		# Get an argiment list of all the ELB names
-		elb_names="$(aws elb describe-load-balancers \
-			| grep "LoadBalancerName" \
-			| sed 's/.* "//' \
-			| tr ',"\n' ' ' \
-			)"
+	# Get an argiment list of all the ELB names
+	elb_names="$(aws elb describe-load-balancers \
+		| grep "LoadBalancerName" \
+		| sed 's/.* "//' \
+		| tr ',"\n' ' ' \
+		)"
 
-		# Find this elb name from the tags
-		elb_name_query=".TagDescriptions[] | select( any (.Tags[]; .Key == \"kubernetes.io/service-name\" and .Value == \"default/${IMAGE_NAME}\")) | .LoadBalancerName"
-		# shellcheck disable=SC2086
-		the_elb_name="$(aws elb describe-tags --load-balancer-names ${elb_names} \
-		 	| jq "${elb_name_query}" \
-		 	|sed 's/"//g'  \
-		 	)"
-		 echo "The ELB name is |${the_elb_name}|"
-	fi
+	# Find this elb name from the tags
+	elb_name_query=".TagDescriptions[] | select( any (.Tags[]; .Key == \"kubernetes.io/service-name\" and .Value == \"default/${IMAGE_NAME}\")) | .LoadBalancerName"
+	# shellcheck disable=SC2086
+	the_elb_name="$(aws elb describe-tags --load-balancer-names ${elb_names} \
+	 	| jq "${elb_name_query}" \
+	 	|sed 's/"//g'  \
+	 	)"
+	 echo "The ELB name is |${the_elb_name}|"
 }
 
 function get-the-elb-dns-name(){
-	if [ -z ${the_elb_dns_name+x} ]; then
-		get-the-elb-name
+	get-the-elb-name
 
-		# Find this elb dns name
-		elb_dns_name_query=".LoadBalancerDescriptions[] | select( .LoadBalancerName == \"${the_elb_name}\") | .DNSName"
-		# shellcheck disable=SC2086
-		the_elb_dns_name="$(aws elb describe-load-balancers --load-balancer-names ${elb_names} \
-		 	| jq "${elb_dns_name_query}" \
-		 	|sed 's/"//g'  \
-		 	)"
-		 echo "The ELB DNS name is |${the_elb_dns_name}|"
-	fi
+	# Find this elb dns name
+	elb_dns_name_query=".LoadBalancerDescriptions[] | select( .LoadBalancerName == \"${the_elb_name}\") | .DNSName"
+	# shellcheck disable=SC2086
+	the_elb_dns_name="$(aws elb describe-load-balancers --load-balancer-names ${elb_names} \
+	 	| jq "${elb_dns_name_query}" \
+	 	|sed 's/"//g'  \
+	 	)"
+	 echo "The ELB DNS name is |${the_elb_dns_name}|"
 }
 
 function add-elb-to-route53(){
@@ -110,20 +101,18 @@ function add-elb-to-route53(){
 
 # Not used now, but remains as a sample
 function get-the-elb-ip(){
-	if [ -z ${the_elb_ip+x} ]; then
-		get-the-elb-name
-		# Find the elb ip address from the name.
-		elb_ip_query=".NetworkInterfaces[] | select( .Description == \"ELB ${the_elb_name}\") | .PrivateIpAddresses[0] | .PrivateIpAddress"
+	get-the-elb-name
+	# Find the elb ip address from the name.
+	elb_ip_query=".NetworkInterfaces[] | select( .Description == \"ELB ${the_elb_name}\") | .PrivateIpAddresses[0] | .PrivateIpAddress"
 
-		the_elb_ip="$(aws ec2 describe-network-interfaces \
-			| jq "${elb_ip_query}" \
-		 	| tr '"' ' ' \
-		 	| head -1 \
-		 	| tr '\n' ' ' \
-		 	| sed 's/ //g' \
-		 	)"
-		 echo "The ELB IP is |${the_elb_ip}|"
-	fi
+	the_elb_ip="$(aws ec2 describe-network-interfaces \
+		| jq "${elb_ip_query}" \
+	 	| tr '"' ' ' \
+	 	| head -1 \
+	 	| tr '\n' ' ' \
+	 	| sed 's/ //g' \
+	 	)"
+	 echo "The ELB IP is |${the_elb_ip}|"
 }
 
 # Not used now, but remains as a sample
