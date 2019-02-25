@@ -29,8 +29,6 @@ fi
 dir_name=${1:-all}
 op=${2:-build}
 
-
-
 if [ "${dir_name}" = "all" ]; then
 	if [ "${op}" == "run" ] || [ "${op}" == "shell" ]; then
 		echo "Can't run the command (${op}) for all applications!"
@@ -42,6 +40,8 @@ if [ "${dir_name}" = "all" ]; then
 		. "${DIR}/build-app.sh" "${dir}" "${op}"
 	done
 else
-	# shellcheck disable=SC1090
-	. "${DIR}/build-app.sh" "${dir_name}" "${op}"
+	for dir in $dir_name ; do
+   		# shellcheck disable=SC1090
+		. "${DIR}/build-app.sh" "${dir}" "${op}"
+	done
 fi

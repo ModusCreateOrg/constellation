@@ -24,18 +24,35 @@ BASE_DIR="$DIR/.."
 . "$DIR/common-k8s.sh"
 
 
+# PROJECT WIDE VARS
 CLUSTER_NAME="$(get-cluster-name)"
 export CLUSTER_NAME
+
+BUILD_DIR="${BASE_DIR}/build"
+export BUILD_DIR
+mkdir -p "${BUILD_DIR}"
 
 # ARGS
 dir_name=${1:-}
 op=${2:-build}
 
-APP_DIR="$BASE_DIR/applications/${dir_name}"
+# APPLICATION SPECIFIC VARS
+APP_DIR="${BASE_DIR}/applications/${dir_name}"
+export APP_DIR
+
 cd "${APP_DIR}" || echo "Can not find: ${APP_DIR}"
 echo "Building in: $(pwd)"
 # shellcheck disable=SC1091
 source ./config-app.sh
+
+# CREATE THE APP BUILD DIR
+APP_BUILD_DIR="${APP_DIR}/build"
+export APP_BUILD_DIR
+mkdir -p "${APP_BUILD_DIR}"
+
+# LOAD THE JMETER COMMON. It needs the build dir define above.
+# shellcheck disable=SC1090
+. "$DIR/common-jmeter.sh"
 
   case "$op" in
     # Run this application locally exposing a port if appropriate
@@ -67,6 +84,24 @@ source ./config-app.sh
     add-dns)
         if [ "$IS_DEPLOYABLE" == 'true' ]; then  
           add-elb-to-route53
+        else
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
+          exit 1
+        fi
+        ;;
+    # Run jmeter against the deployed app
+    run-jmeter-www)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+          jmeter-run-www
+        else
+          echo "This command (${op}) is not a valid operation for a non-deployable application!"
+          exit 1
+        fi
+        ;;
+    # Run jmeter against the local app
+    run-jmeter-local)
+        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+          jmeter-run-local
         else
           echo "This command (${op}) is not a valid operation for a non-deployable application!"
           exit 1

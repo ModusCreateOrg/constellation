@@ -55,27 +55,29 @@ properties([
         booleanParam(
             name: 'Apply_Terraform', 
             defaultValue: false, 
-            description: 'Apply Terraform plan on this build?'
+            description: 'Apply Terraform plan?'
         ),
         string(
             name: 'Application', 
             defaultValue: 'all', 
-            description: 'The application to build.'
+            description: '''The application to build. 
+                            Separate multiple values by a space.
+                            The value 'all' iterates over the applications.'''
         ),
         booleanParam(
             name: 'Build_Container', 
             defaultValue: false, 
-            description: 'Build container/s on this build?'
+            description: 'Build container/s?'
         ),
         booleanParam(
             name: 'Push_Container', 
             defaultValue: false, 
-            description: 'Push container/s to the repository on this build?'
+            description: 'Push container/s to the repository?'
         ),
         booleanParam(
             name: 'Deploy_Container', 
             defaultValue: false, 
-            description: 'Deploy container/s on this build?'
+            description: 'Deploy container/s?'
         ),
         booleanParam(
             name: 'Add_To_DNS', 
@@ -88,9 +90,14 @@ properties([
             description: 'Update container/s on this build?'
         ),
         booleanParam(
+            name: 'Run_Jmeter', 
+            defaultValue: false, 
+            description: 'Run jmeter against the deployed app?'
+        ),
+        booleanParam(
             name: 'Delete_Container', 
             defaultValue: false, 
-            description: 'Delete container/s on this build?'
+            description: 'Delete container/s?'
         ),
         string(
             name: 'CAPTCHA_Guess', 
@@ -263,6 +270,20 @@ if (params.Update_Container) {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
                 sh ("./bin/build.sh ${params.Application} update")
                 sh ("./bin/build.sh ${params.Application} describe-pod")
+            }   
+        }
+    }
+}
+
+if (params.Run_Jmeter) {
+
+    stage('Run Jmeter'){
+        node {
+            if (params.Deploy_Container || params.Update_Container) {
+                sh ("sleep 20")
+            }
+            timeout(time:default_timeout_minutes, unit:'MINUTES') {
+                sh ("./bin/build.sh ${params.Application} run-jmeter-www")
             }   
         }
     }

@@ -12,31 +12,35 @@ build.sh <app-dir> <command>   - Executes <command> in the context of the applic
 
 WHERE:
 
-<app-dir> - Specifies the application directory that contains the application to build. 
-            A value of 'all' iterates over all the application directories.
-            Any directory that begins with a '_' will be skipped in the iteration.
+<app-dir> - Specifies the application directory of the app to build.
+            Separate multiple values with a space. 
+            A value of 'all' iterates over the application directories.
 
 COMMANDS:
 
-'run'      - Run this application locally exposing a port if appropriate.
+'run'               - Run this application locally exposing a port if appropriate.
 
-'build'    - Build the image for this application.
+'build'             - Build the image for this application.
 
-'shell'    - Run this application locally and open a shell. It exposes the port if appropriate.
+'shell'             - Run this application locally and open a shell. It exposes the port if appropriate.
 
-'push'     - Push the image for this application to the repository.
+'push'              - Push the image for this application to the repository.
 
-'deploy'   - Deploy this application to the cluster.
+'deploy'            - Deploy this application to the cluster.
 
-'add-dns' 	- Add this application to the DNS.
+'run-jmeter-local'  - Run jmeter against the local app instance.
 
-'update'   - Update the image for this application which when it is deployed on the cluster.
+'run-jmeter-www'    - Run jmeter against the deployed app instance.
 
-'list'     - List all of the PODs in the cluster.
+'add-dns' 	        - Add this application to the DNS.
 
-'describe' - Describe the POD for this application.
+'update'            - Update the image for this application which when it is deployed on the cluster.
 
-'delete'   - Delete this application from the cluster.
+'list-pods'         - List all of the PODs in the cluster.
+
+'describe-pod'      - Describe the POD for this application.
+
+'delete'            - Delete this application from the cluster.
 
 'idempotent-delete' - Delete this application from the cluster without failing if the application is not deployed.
  

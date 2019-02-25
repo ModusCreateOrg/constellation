@@ -6,6 +6,7 @@
 .vagrant
 .kube
 /env.sh
+*.log
 
 #Ignore all but .tf files in /terraform
 /terraform/*
