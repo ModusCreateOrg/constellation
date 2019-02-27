@@ -147,7 +147,7 @@ mkdir -p "${APP_BUILD_DIR}"
     # Delete this application from the cluster idempotently.
     delete)
         if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
-          k8s-delete || echo "INFO: Trapped undeployed application: ${dir_name}"
+          k8s-delete || echo "INFO: Trapped undeployed application: ${app_dir}"
         else
           echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
         fi
