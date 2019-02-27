@@ -139,8 +139,12 @@ properties([
 stage('Preflight') {
        
     // Check CAPTCHA
+    def should_validate_captcha = false
+    
+    /*
     def should_validate_captcha =  params.Build_Container || params.Push_Container || params.Deploy_Container || params.Updatey_Container || params.Delete_Container || params.Apply_Terraform || params.Destroy_Terraform || params.Add_To_DNS
-
+    */
+    
     if (should_validate_captcha) {
         if (params.CAPTCHA_Guess == null || params.CAPTCHA_Guess == "") {
             throw new Exception("No CAPTCHA guess detected, try again!")
@@ -223,7 +227,7 @@ if (params.Build_Container) {
     stage('Build Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} build")
+                sh ("./bin/build.sh build ${params.Application}")
             }   
         }
     }
@@ -233,7 +237,7 @@ if (params.Push_Container) {
     stage('Push Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} push")
+                sh ("./bin/build.sh push ${params.Application}")
             }   
         }
     }
@@ -243,8 +247,8 @@ if (params.Deploy_Container) {
     stage('Deploy Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} deploy")
-                sh ("./bin/build.sh ${params.Application} describe-pod")
+                sh ("./bin/build.sh deploy ${params.Application}")
+                sh ("./bin/build.sh describe-pod" ${params.Application} )
             }   
         }
     }
@@ -258,7 +262,7 @@ if (params.Add_To_DNS) {
                 sh ("sleep 20")
             }
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} add-dns")
+                sh ("./bin/build.sh add-dns ${params.Application}")
             }   
         }
     }
@@ -268,8 +272,8 @@ if (params.Update_Container) {
     stage('Update Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} update")
-                sh ("./bin/build.sh ${params.Application} describe-pod")
+                sh ("./bin/build.sh update"  ${params.Application})
+                sh ("./bin/build.sh describe-pod ${params.Application}")
             }   
         }
     }
@@ -283,7 +287,7 @@ if (params.Run_Jmeter) {
                 sh ("sleep 20")
             }
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} run-jmeter-www")
+                sh ("./bin/build.sh run-jmeter-www ${params.Application}")
             }   
         }
     }
@@ -293,8 +297,8 @@ if (params.Delete_Container) {
     stage('Delete Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh ${params.Application} idempotent-delete")
-                sh ("./bin/build.sh ${params.Application} list-pods")
+                sh ("./bin/build.sh delete" ${params.Application})
+                sh ("./bin/build.sh list-pods ${params.Application}")
             }   
         }
     }

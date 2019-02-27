@@ -12,9 +12,10 @@ test -t 1 && INPUT_ENABLED="true" || INPUT_ENABLED="false"
 
 export INPUT_ENABLED USE_TTY
 
-export IS_DEPLOYABLE="false"
-export HAS_PORT="false"
+# BUILD FLAGS
+export IS_BUILDABLE="true"
 
+# APPLICATION
 export APPLICATION_NAME=terraform
 export IMAGE_NAME=terraform
 export IMAGE_VERSION=0.11.11

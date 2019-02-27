@@ -16,7 +16,7 @@ export ALB_NAME="k83-demo-alb"
 export VPC_NAME="${PROJECT_NAME}-vpc"
 
 
-function get-vpc-id(){
+function awscli-get-vpc-id(){
 	if [ -z ${VPC_ID+x} ]; then
 		# Find the VPC ID from the name
 		vpc_id_query=".Vpcs[] | select( any (.Tags[]; .Value == \"k8s-eks-scaling-demo-vpc\")) | .VpcId"
@@ -29,13 +29,7 @@ function get-vpc-id(){
 	fi
 }
 
-function get-the-target-group-name(){
-	the_target_group_name="${IMAGE_NAME}-alb-target-group"
-	echo "The ALB target group name is ${the_target_group_name}"
-
-}
-
-function get-the-elb-name(){
+function awscli-get-elb-name(){
 	# Get an argiment list of all the ELB names
 	elb_names="$(aws elb describe-load-balancers \
 		| grep "LoadBalancerName" \
@@ -53,8 +47,8 @@ function get-the-elb-name(){
 	 echo "The ELB name is |${the_elb_name}|"
 }
 
-function get-the-elb-dns-name(){
-	get-the-elb-name
+function awscli-get-elb-dns-name(){
+	awscli-get-elb-name
 
 	# Find this elb dns name
 	elb_dns_name_query=".LoadBalancerDescriptions[] | select( .LoadBalancerName == \"${the_elb_name}\") | .DNSName"
@@ -66,8 +60,13 @@ function get-the-elb-dns-name(){
 	 echo "The ELB DNS name is |${the_elb_dns_name}|"
 }
 
-function add-elb-to-route53(){
-	get-the-elb-dns-name
+function awscli-add-elb-to-route53(){
+
+	if [ "${HAS_DNS:-false}" != 'true' ]; then
+		echo "Can not add a CNAME entry to Route53 when the application has no DNS: ${APPLICATION_NAME}"
+		exit 1
+	fi
+	awscli-get-elb-dns-name
 
 	json_file="$(mktemp)"
 	tee "${json_file}" <<- EOF
@@ -96,62 +95,5 @@ function add-elb-to-route53(){
 	 aws route53 change-resource-record-sets \
           --hosted-zone-id "${APP_HOSTED_ZONE_ID}" \
           --change-batch "file://${json_file}"
-
-}
-
-# Not used now, but remains as a sample
-function get-the-elb-ip(){
-	get-the-elb-name
-	# Find the elb ip address from the name.
-	elb_ip_query=".NetworkInterfaces[] | select( .Description == \"ELB ${the_elb_name}\") | .PrivateIpAddresses[0] | .PrivateIpAddress"
-
-	the_elb_ip="$(aws ec2 describe-network-interfaces \
-		| jq "${elb_ip_query}" \
-	 	| tr '"' ' ' \
-	 	| head -1 \
-	 	| tr '\n' ' ' \
-	 	| sed 's/ //g' \
-	 	)"
-	 echo "The ELB IP is |${the_elb_ip}|"
-}
-
-# Not used now, but remains as a sample
-function create-target-group(){
-	get-the-elb-ip
-	get-the-target-group-name
-	get-vpc-id
-
-    target_group_response="$(aws elbv2 create-target-group \
-          --name "${the_target_group_name}" \
-          --protocol HTTP \
-          --port 80 \
-          --vpc-id "${VPC_ID}" \
-          --target-type ip \
-          )" 
-          #[--health-check-protocol <value>]
-          #[--health-check-port <value>]
-          #[--health-check-enabled | --no-health-check-enabled]
-          #[--health-check-path <value>]
-          #[--health-check-interval-seconds <value>]
-      	  #[--health-check-timeout-seconds <value>]
-          #[--healthy-threshold-count <value>]
-          #[--unhealthy-threshold-count <value>]
-          #[--matcher <value>]
-          #[--target-type <value>]
-          #[--cli-input-json <value>]
-          #[--generate-cli-skeleton <value>]
-
-    #echo "${target_group_response}"
-		
-    the_target_group_arn="$( grep TargetGroupArn <<< "${target_group_response}" \
-	   	| sed 's/.* "//' \
-	   	| tr ',"\n' ' ' \
-	   	| sed 's/ //g' \
-    )"
-    echo "The target group ARN is |${the_target_group_arn}|"
-
-	aws elbv2 register-targets \
-          --target-group-arn "${the_target_group_arn}" \
-          --targets "Id=${the_elb_ip}"
 
 }

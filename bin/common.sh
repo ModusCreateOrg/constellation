@@ -65,3 +65,4 @@ function get_docker_shellcheck() {
     echo "docker run --rm -i ${USE_TTY} -v $(pwd):/mnt koalaman/shellcheck"
 }
 
+

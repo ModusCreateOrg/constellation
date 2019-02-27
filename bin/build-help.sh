@@ -6,43 +6,63 @@ cat << EOF
 ===============================
 USAGE: 
 
-build.sh                       - Builds all of the applications ( build.sh all build )
-build.sh print-help.           - Prints this help message.
-build.sh <app-dir> <command>   - Executes <command> in the context of the application directory <app-dir>.
+build.sh                       	
+	Builds all of the applications. ( build.sh build all )
+
+build.sh help           			
+	Prints this help message.
+
+build.sh <proj-cmd>           			
+	
+build.sh <app-cmd>   		
+	Executes <app-cmd> for all of the applications.
+
+build.sh <app-cmd> [all|<app-dir> [<app-dir ... ]]
+	Executes <app-cmd> in the context of the application directory <app-dir>.
 
 WHERE:
 
-<app-dir> - Specifies the application directory of the app to build.
-            Separate multiple values with a space. 
-            A value of 'all' iterates over the application directories.
+	PROJ-CMD:
 
-COMMANDS:
+		'help'.       - Prints this help message.
 
-'run'               - Run this application locally exposing a port if appropriate.
+		'list-pods'	  - Lists all of the pods.
 
-'build'             - Build the image for this application.
+		'list-svcs'   - Lists all of the services.
 
-'shell'             - Run this application locally and open a shell. It exposes the port if appropriate.
 
-'push'              - Push the image for this application to the repository.
 
-'deploy'            - Deploy this application to the cluster.
+	APP-CMD:
 
-'run-jmeter-local'  - Run jmeter against the local app instance.
+		'run'               - Run this application locally exposing a port if appropriate.
 
-'run-jmeter-www'    - Run jmeter against the deployed app instance.
+		'build'             - Build the image for this application.
 
-'add-dns' 	        - Add this application to the DNS.
+		'shell'             - Run this application locally and open a shell. It exposes the port if appropriate.
 
-'update'            - Update the image for this application which when it is deployed on the cluster.
+		'push'              - Push the image for this application to the repository.
 
-'list-pods'         - List all of the PODs in the cluster.
+		'deploy'            - Deploy this application to the cluster.
 
-'describe-pod'      - Describe the POD for this application.
+		'run-jmeter-local'  - Run jmeter against the local app instance.
 
-'delete'            - Delete this application from the cluster.
+		'run-jmeter-www'    - Run jmeter against the deployed app instance.
 
-'idempotent-delete' - Delete this application from the cluster without failing if the application is not deployed.
+		'add-dns' 	        - Add this application to the DNS.
+
+		'update'            - Update the image for this application which when it is deployed on the cluster.
+
+		'list-pods'         - List all of the PODs in the cluster.
+
+		'describe-pod'      - Describe the POD for this application.
+
+		'delete'            - Delete this application from the cluster idempotently.
+
+
+	<app-dir> - Specifies the application directory of the app to build.
+	            A value of 'all' iterates over the application directories.
+	            Directories that begin with '_' are skipped in the iteration.
+
  
 EOF
 

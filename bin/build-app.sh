@@ -14,36 +14,34 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$DIR/.."
 
-# shellcheck disable=SC1090
-. "$BASE_DIR/env.sh"
-# shellcheck disable=SC1090
-. "$DIR/common-docker.sh"
-# shellcheck disable=SC1090
-. "$DIR/common-awscli.sh"
-# shellcheck disable=SC1090
-. "$DIR/common-k8s.sh"
-
-
-# PROJECT WIDE VARS
-CLUSTER_NAME="$(get-cluster-name)"
-export CLUSTER_NAME
+function set-missing-app-vars(){
+    export IS_BUILDABLE=${IS_BUILDABLE:-false}
+    export IS_DEPLOYABLE="${IS_DEPLOYABLE:-false}"
+    export HAS_PORT="${HAS_PORT:-false}"
+    export HAS_HEALTH_CHECK="${HAS_HEALTH_CHECK:-false}"
+}
 
 BUILD_DIR="${BASE_DIR}/build"
 export BUILD_DIR
 mkdir -p "${BUILD_DIR}"
 
 # ARGS
-dir_name=${1:-}
-op=${2:-build}
+app_dir=${1:-}
+app_op=${2:-build}
+
+#echo "INFO: app_dir: ${app_dir}"
+#echo "INFO: app_op: ${op}"
 
 # APPLICATION SPECIFIC VARS
-APP_DIR="${BASE_DIR}/applications/${dir_name}"
+APP_DIR="${BASE_DIR}/applications/${app_dir}"
 export APP_DIR
 
-cd "${APP_DIR}" || echo "Can not find: ${APP_DIR}"
-echo "Building in: $(pwd)"
+# APPLICATION CONFIG
+cd "${APP_DIR}" || (echo "Can not find: ${APP_DIR}" && exit 1)
+#echo "INFO: Building in: $(pwd)"
 # shellcheck disable=SC1091
 source ./config-app.sh
+set-missing-app-vars
 
 # CREATE THE APP BUILD DIR
 APP_BUILD_DIR="${APP_DIR}/build"
@@ -54,110 +52,113 @@ mkdir -p "${APP_BUILD_DIR}"
 # shellcheck disable=SC1090
 . "$DIR/common-jmeter.sh"
 
-  case "$op" in
-    # Run this application locally exposing a port if appropriate
+  case "$app_op" in
+    
+    # Run this application locally exposing the port if appropriate
     run)
-      docker-run
-      ;;   
+        if [ "${IS_BUILDABLE}" == 'true' ]; then  
+          docker-run
+        else
+          docker-run-external
+        fi
+        ;; 
+
+    # Run this application locally and open a shell. Exposes the port if appropriate.
+    shell)
+        docker-shell
+        ;;
+  
     # Build the image for this application
     build)
-      docker-build
-      ;;
-    # Run this application locally and open a shell. It exposes the port if appropriate.
-    shell)
-      docker-shell
-      ;;
+        if [ "${IS_BUILDABLE}" == 'true' ]; then  
+          docker-build
+        else
+          echo "WARN: This command (${op}) is not a valid operation for a non-buildable application!"
+        fi
+        ;;
+    
     # Push the image for this application to the repository
     push)
-      docker-push
-      ;;
+        if [ "${IS_BUILDABLE}" == 'true' ]; then  
+          docker-push
+        else
+          echo "WARN: This command (${op}) is not a valid operation for a non-buildable application!"
+        fi
+        ;;
+    
     # Deploy this application to the cluster
     deploy)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
-          k8s-deploy
+        if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
+            k8s-deploy
         else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
+            echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
         fi
         ;;
+    
     # Add this application to the DNS
     add-dns)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
-          add-elb-to-route53
+        if [ "${IS_DEPLOYABLE}" != 'true' ]; then  
+          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+        elif [ "${HAS_PORT}" != 'true' ]; then  
+          echo "WARN: This command (${op}) is not a valid operation for an application with no port!"
         else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
+          awscli-add-elb-to-route53
         fi
         ;;
+    
     # Run jmeter against the deployed app
     run-jmeter-www)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
-          jmeter-run-www
+        if [ "${IS_DEPLOYABLE}" != 'true' ]; then  
+          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+        elif [ "${HAS_PORT}" != 'true' ]; then  
+          echo "WARN: This command (${op}) is not a valid operation for an application with no port!"
         else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
+          jmeter-run-www
         fi
         ;;
+    
     # Run jmeter against the local app
     run-jmeter-local)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+        if [ "${HAS_PORT}" == 'true' ]; then  
           jmeter-run-local
         else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
+          echo "WARN: This command (${op}) is not a valid operation for an application with no port!"
         fi
         ;;
+    
     # Update the image for this application which when it is deployed on the cluster
     update)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+        if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
           k8s-update
         else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
+          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
         fi
         ;;
-    # List all of the PODs in the cluster
-    list-pods)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then
-          k8s-list-pods
-        else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
-        fi
-        ;;
+    
     # Describe the POD for this application
     describe-pod)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then
+        if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
           k8s-describe-pod
         else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
+          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
         fi
         ;;
-    # Delete this application from the cluster
-    delete)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
-          k8s-delete
-        else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
-        fi
-      ;;
+    
     # Delete this application from the cluster idempotently.
-    idempotent-delete)
-        if [ "$IS_DEPLOYABLE" == 'true' ]; then  
+    delete)
+        if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
           k8s-delete || echo "INFO: Trapped undeployed application: ${dir_name}"
         else
-          echo "This command (${op}) is not a valid operation for a non-deployable application!"
-          exit 1
+          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
         fi
       ;;
+    
     # A workspace to run debugging code.
     debug)
         add-elb-to-route53
       ;;
     *)
-      echo "This command (${op}) is not a valid operation!"
+      echo "ERROR: This command (${op}) is not a valid operation!"
       exit 1
       ;;
 esac

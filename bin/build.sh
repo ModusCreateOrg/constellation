@@ -14,22 +14,53 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$DIR/.."
 
-#shellcheck disable=SC1090
+# shellcheck disable=SC1090
 . "$BASE_DIR/env.sh"
+# shellcheck disable=SC1090
+. "$DIR/common-docker.sh"
+# shellcheck disable=SC1090
+. "$DIR/common-awscli.sh"
+# shellcheck disable=SC1090
+. "$DIR/common-k8s.sh"
 # shellcheck disable=SC1090
 . "$DIR/build-help.sh"
 
-# IS HELP
-if [ "${1:-all}" == "help" ]; then
-	print-help
-	exit 0
-fi
+# PROJECT WIDE VARS
+CLUSTER_NAME="$(k8s-get-cluster-name)"
+export CLUSTER_NAME
+
 
 # GET ARGS
-dir_name=${1:-all}
-op=${2:-build}
+op=${1:-build}
+shift
+args=${@:-all}
 
-if [ "${dir_name}" = "all" ]; then
+#echo "OP: ${op}"
+#echo "ARGS: ${args}"
+
+case "$op" in
+
+# Display the help
+help)
+	print-help
+	exit 0
+    ;; 
+
+# List all of the PODs in the cluster
+list-pods)
+   	k8s-list-pods
+ 	exit 0
+   	;;
+
+# List all of the PODs in the cluster
+list-svcs)
+   	k8s-list-svcs
+ 	exit 0
+   	;;
+
+esac
+
+if [ "${args}" == "all" ]; then
 	if [ "${op}" == "run" ] || [ "${op}" == "shell" ]; then
 		echo "Can't run the command (${op}) for all applications!"
 		exit 1
@@ -40,7 +71,8 @@ if [ "${dir_name}" = "all" ]; then
 		. "${DIR}/build-app.sh" "${dir}" "${op}"
 	done
 else
-	for dir in $dir_name ; do
+	# shellcheck disable=SC2068
+	for dir in ${args} ; do
    		# shellcheck disable=SC1090
 		. "${DIR}/build-app.sh" "${dir}" "${op}"
 	done

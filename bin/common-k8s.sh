@@ -12,52 +12,66 @@ test -t 1 && INPUT_ENABLED="true" || INPUT_ENABLED="false"
 
 export INPUT_ENABLED USE_TTY
 
-function get-cluster-name(){
+function k8s-get-cluster-name(){
 	echo "${PROJECT_NAME}-cluster"
 }
 
-function get-kubeconfig-dir(){
+function k8s-get-kubeconfig-dir(){
 	dir="${BASE_DIR}/.kube"
 	mkdir -p "${dir}"
 	echo "${dir}"
 }
 
-function update-kubeconfig-home(){
+function k8s-update-kubeconfig-home(){
 	aws eks update-kubeconfig --region "${AWS_DEFAULT_REGION}" --name "${CLUSTER_NAME}"
 }
 
-function update-kubeconfig(){
-	rm  -f "$(get-kubeconfig-dir)/config"
-	aws eks update-kubeconfig --kubeconfig "$(get-kubeconfig-dir)/config" --region "${AWS_DEFAULT_REGION}" --name "${CLUSTER_NAME}"
+function k8s-update-kubeconfig(){
+	rm  -f "$(k8s-get-kubeconfig-dir)/config"
+	aws eks update-kubeconfig --kubeconfig "$(k8s-get-kubeconfig-dir)/config" --region "${AWS_DEFAULT_REGION}" --name "${CLUSTER_NAME}"
 }
 
-function kube-ctl(){
-	update-kubeconfig
+function k8s-kube-ctl(){
+	k8s-update-kubeconfig
 	# shellcheck disable=SC2068
-	kubectl "--kubeconfig=$(get-kubeconfig-dir)/config" $@
+	kubectl "--kubeconfig=$(k8s-get-kubeconfig-dir)/config" $@
 }
 
 function k8s-list-pods(){
-	kube-ctl get pods --all-namespaces
+	k8s-kube-ctl get pods --all-namespaces
+}
+
+function k8s-list-svcs(){
+	k8s-kube-ctl get services
 }
 
 function k8s-describe-pod(){
-	kube-ctl describe pods "${IMAGE_NAME}"
+	k8s-kube-ctl describe pods "${IMAGE_NAME}"
 }
 
 function k8s-deploy(){
-	echo K8S DEPLOY: "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
-	kube-ctl run "${IMAGE_NAME}" --port=80 --image "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
-	kube-ctl expose deployment "${IMAGE_NAME}" --type=LoadBalancer --port=80 --target-port=80
+	echo "INFO: k83-deploy:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
+	k8s-kube-ctl run "${IMAGE_NAME}" "--port=${CONTAINER_PORT}" --image "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
+	k8s-kube-ctl expose deployment "${IMAGE_NAME}" --type=LoadBalancer "--port=${EXPOSE_PORT}" "--target-port=${CONTAINER_PORT}"
 }
 
 function k8s-update(){
-	echo K8S UPDATE: "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
-	kube-ctl set image "deployment/${IMAGE_NAME}" "${IMAGE_NAME}=${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
+	echo "INFO: k83-update:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
+	k8s-kube-ctl set image "deployment/${IMAGE_NAME}" "${IMAGE_NAME}=${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
 }
 
 function k8s-delete(){
-	kube-ctl delete deployment "${IMAGE_NAME}"
-	kube-ctl delete svc "${IMAGE_NAME}"
+	echo "INFO: k83-delete:" "${IMAGE_NAME}"
+	k8s-kube-ctl delete deployment "${IMAGE_NAME}"
+	k8s-kube-ctl delete svc "${IMAGE_NAME}"
 }
+
+function k8s-initialize(){
+	echo "INFO: k83-initialize"
+	echo k8s-initialize
+}
+
+
+
+
 

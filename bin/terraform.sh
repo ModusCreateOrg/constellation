@@ -97,8 +97,8 @@ plan-destroy)
 apply) 
   Message="Executing terraform apply."
   if [ -f /tmp/isDestroy ]; then
-    echo "Deleting all PODs from cluster since this is a destroy !!!"
-    "${DIR}/build.sh" all idempotent-delete
+    echo "Preparing the cluster for the Terraform destroy !!!"
+    "${DIR}/build.sh" delete all
     sleep 20 # Safety wait for theELBs to be deleted
   fi
   rm -f /tmp/isDestroy
