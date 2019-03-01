@@ -88,11 +88,14 @@ function apply() {
 case "$verb" in
 plan)
   Message="Executing terraform plan."
+  touch /tmp/isBuild
   rm -f /tmp/isDestroy
   ;;
 plan-destroy)
   Message="Executing terraform plan, with destroy."
   touch /tmp/isDestroy
+  rm -f /tmp/isBuild
+
   ;;
 apply) 
   Message="Executing terraform apply."
@@ -112,4 +115,11 @@ esac
 echo "$Message"
 init_terraform
 "$verb"
+
+if [ -f /tmp/isBuild ]; then
+  "${DIR}/build.sh" create-dashboard
+  rm -f /tmp/isBuild
+fi
+
+
 

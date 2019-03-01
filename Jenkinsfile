@@ -248,7 +248,8 @@ if (params.Deploy_Container) {
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
                 sh ("./bin/build.sh deploy ${params.Application}")
-                sh ("./bin/build.sh describe-pod" ${params.Application} )
+                sh ("./bin/build.sh list-pods")
+                sh ("./bin/build.sh list-svcs")
             }   
         }
     }
@@ -272,7 +273,7 @@ if (params.Update_Container) {
     stage('Update Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh update"  ${params.Application})
+                sh ("./bin/build.sh update ${params.Application}")
                 sh ("./bin/build.sh describe-pod ${params.Application}")
             }   
         }
@@ -297,8 +298,9 @@ if (params.Delete_Container) {
     stage('Delete Application Containers'){
         node {
             timeout(time:default_timeout_minutes, unit:'MINUTES') {
-                sh ("./bin/build.sh delete" ${params.Application})
-                sh ("./bin/build.sh list-pods ${params.Application}")
+                sh ("./bin/build.sh delete ${params.Application}")
+                sh ("./bin/build.sh list-pods")
+                sh ("./bin/build.sh list-svcs")
             }   
         }
     }

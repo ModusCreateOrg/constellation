@@ -49,6 +49,15 @@ function k8s-describe-pod(){
 	k8s-kube-ctl describe pods "${IMAGE_NAME}"
 }
 
+function k8s-create-dashboard(){
+	k8s-kube-ctl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
+}
+
+function k8s-create-admin(){
+	k8s-kube-ctl apply -f "${BASE_DIR}/config/dashboard-adminuser.yaml"
+	k8s-kube-ctl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+}
+
 function k8s-deploy(){
 	echo "INFO: k83-deploy:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
 	k8s-kube-ctl run "${IMAGE_NAME}" "--port=${CONTAINER_PORT}" --image "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"

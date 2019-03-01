@@ -33,7 +33,7 @@ export CLUSTER_NAME
 # GET ARGS
 op=${1:-build}
 shift
-args=${@:-all}
+args=${*:-all}
 
 #echo "OP: ${op}"
 #echo "ARGS: ${args}"
@@ -57,6 +57,22 @@ list-svcs)
    	k8s-list-svcs
  	exit 0
    	;;
+
+# Update the kubeconfig in your home dir.
+kubeconfig)
+   	k8s-update-kubeconfig-home
+ 	exit 0
+   	;;
+
+# Create the cluster dashboard and admin user.
+create-dashboard)
+   	k8s-create-dashboard
+   	k8s-create-admin
+ 	exit 0
+   	;;
+
+k8s-create-admin
+
 
 esac
 

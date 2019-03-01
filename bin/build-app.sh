@@ -73,7 +73,7 @@ mkdir -p "${APP_BUILD_DIR}"
         if [ "${IS_BUILDABLE}" == 'true' ]; then  
           docker-build
         else
-          echo "WARN: This command (${op}) is not a valid operation for a non-buildable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a non-buildable application!"
         fi
         ;;
     
@@ -82,7 +82,7 @@ mkdir -p "${APP_BUILD_DIR}"
         if [ "${IS_BUILDABLE}" == 'true' ]; then  
           docker-push
         else
-          echo "WARN: This command (${op}) is not a valid operation for a non-buildable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a non-buildable application!"
         fi
         ;;
     
@@ -91,16 +91,16 @@ mkdir -p "${APP_BUILD_DIR}"
         if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
             k8s-deploy
         else
-            echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+            echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         fi
         ;;
     
     # Add this application to the DNS
     add-dns)
         if [ "${IS_DEPLOYABLE}" != 'true' ]; then  
-          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         elif [ "${HAS_PORT}" != 'true' ]; then  
-          echo "WARN: This command (${op}) is not a valid operation for an application with no port!"
+          echo "WARN: This command (${app_op}) is not a valid operation for an application with no port!"
         else
           awscli-add-elb-to-route53
         fi
@@ -109,9 +109,9 @@ mkdir -p "${APP_BUILD_DIR}"
     # Run jmeter against the deployed app
     run-jmeter-www)
         if [ "${IS_DEPLOYABLE}" != 'true' ]; then  
-          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         elif [ "${HAS_PORT}" != 'true' ]; then  
-          echo "WARN: This command (${op}) is not a valid operation for an application with no port!"
+          echo "WARN: This command (${app_op}) is not a valid operation for an application with no port!"
         else
           jmeter-run-www
         fi
@@ -122,7 +122,7 @@ mkdir -p "${APP_BUILD_DIR}"
         if [ "${HAS_PORT}" == 'true' ]; then  
           jmeter-run-local
         else
-          echo "WARN: This command (${op}) is not a valid operation for an application with no port!"
+          echo "WARN: This command (${app_op}) is not a valid operation for an application with no port!"
         fi
         ;;
     
@@ -131,7 +131,7 @@ mkdir -p "${APP_BUILD_DIR}"
         if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
           k8s-update
         else
-          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         fi
         ;;
     
@@ -140,7 +140,7 @@ mkdir -p "${APP_BUILD_DIR}"
         if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
           k8s-describe-pod
         else
-          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         fi
         ;;
     
@@ -149,7 +149,7 @@ mkdir -p "${APP_BUILD_DIR}"
         if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
           k8s-delete || echo "INFO: Trapped undeployed application: ${app_dir}"
         else
-          echo "WARN: This command (${op}) is not a valid operation for a non-deployable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         fi
       ;;
     
@@ -158,7 +158,7 @@ mkdir -p "${APP_BUILD_DIR}"
         add-elb-to-route53
       ;;
     *)
-      echo "ERROR: This command (${op}) is not a valid operation!"
+      echo "ERROR: This command (${app_op}) is not a valid operation!"
       exit 1
       ;;
 esac

@@ -24,12 +24,15 @@ WHERE:
 
 	PROJ-CMD:
 
-		'help'.       - Prints this help message.
+		'help'.       		- Prints this help message.
 
-		'list-pods'	  - Lists all of the pods.
+		'list-pods'	  		- Lists all of the pods.
 
-		'list-svcs'   - Lists all of the services.
+		'list-svcs'   		- Lists all of the services.
 
+		'kubeconfig'  		- Update the kubeconfig in your home dir.
+
+		'create-dashboard'  - Create the cluster dashboard and the admin user. The token prints on stdout.
 
 
 	APP-CMD:
