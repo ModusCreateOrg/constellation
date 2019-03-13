@@ -38,7 +38,7 @@ args=${*:-all}
 #echo "OP: ${op}"
 #echo "ARGS: ${args}"
 
-case "$op" in
+case "${op}" in
 
 # Display the help
 help)
@@ -71,7 +71,11 @@ create-dashboard)
  	exit 0
    	;;
 
-k8s-create-admin
+# Delete all apps
+delete-all)
+   	k8s-delete-all
+ 	exit 0
+   	;;
 
 
 esac

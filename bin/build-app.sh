@@ -14,11 +14,12 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$DIR/.."
 
-function set-missing-app-vars(){
-    export IS_BUILDABLE=${IS_BUILDABLE:-false}
-    export IS_DEPLOYABLE="${IS_DEPLOYABLE:-false}"
-    export HAS_PORT="${HAS_PORT:-false}"
-    export HAS_HEALTH_CHECK="${HAS_HEALTH_CHECK:-false}"
+function reset-app-flags(){
+    export IS_BUILDABLE=false
+    export IS_DEPLOYABLE=false
+    export HAS_PORT=false
+    export HAS_HEALTH_CHECK=false
+    export HAS_APP_SCALING=false
 }
 
 BUILD_DIR="${BASE_DIR}/build"
@@ -39,9 +40,9 @@ export APP_DIR
 # APPLICATION CONFIG
 cd "${APP_DIR}" || (echo "Can not find: ${APP_DIR}" && exit 1)
 #echo "INFO: Building in: $(pwd)"
+reset-app-flags
 # shellcheck disable=SC1091
 source ./config-app.sh
-set-missing-app-vars
 
 # CREATE THE APP BUILD DIR
 APP_BUILD_DIR="${APP_DIR}/build"
@@ -89,7 +90,16 @@ mkdir -p "${APP_BUILD_DIR}"
     # Deploy this application to the cluster
     deploy)
         if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
-            k8s-deploy
+            
+            k8s-deploy-app
+            
+            if [ "${HAS_PORT}" == 'true' ]; then
+              k8s-expose-app
+            fi
+            
+            if [ "${HAS_APP_SCALING}" == 'true' ]; then
+              k8s-autoscale-app
+            fi
         else
             echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         fi
@@ -146,10 +156,12 @@ mkdir -p "${APP_BUILD_DIR}"
     
     # Delete this application from the cluster idempotently.
     delete)
-        if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
-          k8s-delete || echo "INFO: Trapped undeployed application: ${app_dir}"
+        if [ "${IS_DEPLOYABLE}" == 'true' ]; then
+          k8s-delete-app-expose || echo "INFO: Trapped UNEXPOSED application: ${app_dir}"
+          k8s-delete-app-autoscale || echo "INFO: Trapped UNSCALED application: ${app_dir}"
+          k8s-delete-app || echo "INFO: Trapped UNDEPLOYED application: ${app_dir}"
         else
-          echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
+          echo "WARN: This command (${app_op}) is not a valid operation for a NON-DEPLOYABLE application!"
         fi
       ;;
     

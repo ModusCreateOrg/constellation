@@ -101,7 +101,7 @@ apply)
   Message="Executing terraform apply."
   if [ -f /tmp/isDestroy ]; then
     echo "Preparing the cluster for the Terraform destroy !!!"
-    "${DIR}/build.sh" delete all
+    "${DIR}/build.sh" delete-all
     sleep 20 # Safety wait for theELBs to be deleted
   fi
   rm -f /tmp/isDestroy

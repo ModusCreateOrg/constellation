@@ -29,8 +29,8 @@ export EXPOSE_PORT=80
 
 # DNS
 export HAS_DNS="true"
-export APP_HOSTED_ZONE_ID="ZC5W4OMO7VFXP" # devops-eks-demo.modus.app
-export APP_DOMAIN_NAME="eks-demo-prom.modus.app"
+export APP_HOSTED_ZONE_ID="Z3T9P3UZ411PU4"
+export APP_DOMAIN_NAME="eks-demo-prom.dev.moduscreate.com"
 
 # HEALTH CHECK
 export SET_HEALTH_CHECK='true'

@@ -55,24 +55,51 @@ function k8s-create-dashboard(){
 
 function k8s-create-admin(){
 	k8s-kube-ctl apply -f "${BASE_DIR}/config/dashboard-adminuser.yaml"
-	k8s-kube-ctl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+	k8s-kube-ctl -n kube-system describe secret "$(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')"
 }
 
-function k8s-deploy(){
-	echo "INFO: k83-deploy:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
+function k8s-deploy-app(){
+	echo "INFO: k83-deploy-app:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
 	k8s-kube-ctl run "${IMAGE_NAME}" "--port=${CONTAINER_PORT}" --image "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
-	k8s-kube-ctl expose deployment "${IMAGE_NAME}" --type=LoadBalancer "--port=${EXPOSE_PORT}" "--target-port=${CONTAINER_PORT}"
 }
 
-function k8s-update(){
+function k8s-expose-app(){
+	echo "INFO: k83-expose-app:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
+	k8s-kube-ctl expose deployment "${IMAGE_NAME}" --type=LoadBalancer "--port=${EXPOSE_PORT}" "--target-port=${CONTAINER_PORT}"
+
+}
+
+function k8s-autoscale-app(){
+	echo "INFO: k8s-enable-app-scaling:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
+	k8s-kube-ctl autoscale deployment "${IMAGE_NAME}" "--cpu-percent=${APP_SCALE_CPU_PERCENT}" "--min=${APP_SCALE_MIN}" "--max=${APP_SCALE_MAX}"
+}
+
+function k8s-update-app(){
 	echo "INFO: k83-update:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
 	k8s-kube-ctl set image "deployment/${IMAGE_NAME}" "${IMAGE_NAME}=${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}"
 }
 
-function k8s-delete(){
-	echo "INFO: k83-delete:" "${IMAGE_NAME}"
+function k8s-delete-app(){
+	echo "INFO: k8s-delete-app:" "${IMAGE_NAME}"
 	k8s-kube-ctl delete deployment "${IMAGE_NAME}"
+}
+
+function k8s-delete-app-expose(){
+	echo "INFO: k8s-delete-expose:" "${IMAGE_NAME}"
 	k8s-kube-ctl delete svc "${IMAGE_NAME}"
+}
+
+function k8s-delete-app-autoscale(){
+	echo "INFO: k8s-delete-expose:" "${IMAGE_NAME}"
+	k8s-kube-ctl delete hpa "${IMAGE_NAME}"
+}
+
+function k8s-delete-all(){
+	echo "INFO: k8s-delete-all"
+	# Thanks Stack Overflow: https://stackoverflow.com/a/43996070
+	# k8s-kube-ctl get pods --no-headers=true --all-namespaces |sed -r 's/(\S+)\s+(\S+).*/kubectl --namespace \1 delete pod \2/e'
+	k8s-kube-ctl delete daemonsets,replicasets,services,deployments,pods,rc --all
+
 }
 
 function k8s-initialize(){
