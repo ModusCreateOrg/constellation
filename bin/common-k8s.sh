@@ -102,11 +102,6 @@ function k8s-delete-all(){
 
 }
 
-function k8s-initialize(){
-	echo "INFO: k83-initialize"
-	echo k8s-initialize
-}
-
 
 
 

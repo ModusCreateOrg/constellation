@@ -47,6 +47,31 @@ function awscli-get-elb-name(){
 	 echo "The ELB name is |${the_elb_name}|"
 }
 
+function awscli-get-asg-name(){
+	the_asg_name="$(aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[0].AutoScalingGroupName' --output text)"
+	echo "The ASG name: ${the_asg_name}"
+
+}
+
+function awscli-set-asg-tag(){
+		key="${1}"
+		value="${2:-''}"
+		echo "INFO: awscli-set-asg-tag: Key=${key},Value=${value}"
+		awscli-get-asg-name
+		aws autoscaling create-or-update-tags \
+		  --tags "ResourceId=${the_asg_name},ResourceType=auto-scaling-group,Key=${key},Value=${value},PropagateAtLaunch=false"
+}
+
+function awscli-rmv-asg-tag(){
+		key="${1}"
+		value="${2:-''}"
+		echo "INFO: awscli-rmv-asg-tag: Key=$key,Value=$value"
+		awscli-get-asg-name
+		aws autoscaling delete-tags \
+		  --tags "ResourceId=${the_asg_name},ResourceType=auto-scaling-group,Key=${key},Value=${value}"
+}
+
+
 function awscli-get-elb-dns-name(){
 	awscli-get-elb-name
 
@@ -59,6 +84,17 @@ function awscli-get-elb-dns-name(){
 	 	)"
 	 echo "The ELB DNS name is |${the_elb_dns_name}|"
 }
+
+function awscli-get-worker-role(){
+	the_worker_role="$(aws iam list-roles --query Roles[].RoleName | grep k8s-eks-scaling-demo | tail -1 | sed 's/[", ]//g')"
+	echo "INFO: awscli-get-worker-role: The worker role is: ${the_worker_role}"
+}
+
+function awscli-add-cloudformation-iam-policy {
+	json_path="${1}"
+	awscli-get-worker-role
+	aws iam put-role-policy --role-name "${the_worker_role}" --policy-name AllowAutoScaling --policy-document "file://${json_path}"
+} 
 
 function awscli-add-elb-to-route53(){
 

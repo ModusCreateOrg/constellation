@@ -30,8 +30,8 @@ export EXPOSE_PORT=80
 
 # DNS
 export HAS_DNS="true"
-export APP_HOSTED_ZONE_ID="Z3T9P3UZ411PU4"
-export APP_DOMAIN_NAME="eks-demo-webapp.dev.moduscreate.com"
+export APP_HOSTED_ZONE_ID="ZXRWF072FZRRS"
+export APP_DOMAIN_NAME="eks-demo-webapp.moduscreate.com"
 
 # SCALING
 export HAS_APP_SCALING=true

@@ -33,6 +33,8 @@ WHERE:
 		'kubeconfig'  		- Update the kubeconfig in your home dir.
 
 		'create-dashboard'  - Create the cluster dashboard and the admin user. The token prints on stdout.
+	     
+	    'enable-cluster-autoscaling' - Configure and enable autoscaling for the cluster.
 
 
 	APP-CMD:

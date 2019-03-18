@@ -116,8 +116,9 @@ echo "$Message"
 init_terraform
 "$verb"
 
-if [ -f /tmp/isBuild ]; then
+if [ -f /tmp/isBuild ] && [ "$verb" == "apply" ]; then
   "${DIR}/build.sh" create-dashboard
+  "${DIR}/build.sh" enable-cluster-autoscaling
   rm -f /tmp/isBuild
 fi
 

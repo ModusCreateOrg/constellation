@@ -56,6 +56,15 @@ A `Jenkinsfile` is provided that will allow Jenkins to execute Terraform. In ord
     chmod 755 /usr/local/bin/kubectl
 	```
     If 'kubectl' isn't installed, prep.sh will install it from the AWS repository.
+
+- helm:
+    ```
+    brew install kubernetes-helm
+    ```
+    or
+    ```
+    https://github.com/helm/helm/releases
+    ```
 ### Terraform
 
 This Terraform setup stores its state in Amazon S3 and uses DynamoDB for locking. There is a bit of setup required to bootstrap that configuration. Yu can use [this repository](https://github.com/monterail/terraform-bootstrap-example) to use Terraform to do that bootstrap process. The `backend.tfvars` file in that repo should be modified as follows to work with this project:

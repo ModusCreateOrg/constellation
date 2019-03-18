@@ -23,6 +23,8 @@ BASE_DIR="$DIR/.."
 # shellcheck disable=SC1090
 . "$DIR/common-k8s.sh"
 # shellcheck disable=SC1090
+. "$DIR/common-helm.sh"
+# shellcheck disable=SC1090
 . "$DIR/build-help.sh"
 
 # PROJECT WIDE VARS
@@ -77,6 +79,11 @@ delete-all)
  	exit 0
    	;;
 
+# Configure the cluster autoscaling
+enable-cluster-autoscaling)
+   	helm-enable-cluster-autoscaling
+ 	exit 0
+   	;;
 
 esac
 
