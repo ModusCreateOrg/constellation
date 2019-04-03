@@ -205,7 +205,7 @@ if (params.Apply_Terraform || params.Destroy_Terraform) {
     // See https://support.cloudbees.com/hc/en-us/articles/226554067-Pipeline-How-to-add-an-input-step-with-timeout-that-continues-if-timeout-is-reached-using-a-default-value
     def userInput = false
     try {
-        timeout(time: default_timeout_minutes, unit: 'MINUTES') {
+        timeout(time: 20, unit: 'MINUTES') {
             userInput = input(message: terraform_prompt)
         }
         stage('Apply Terraform') {

@@ -53,6 +53,20 @@ function k8s-create-dashboard(){
 	k8s-kube-ctl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
 }
 
+function k8s-proxy-dashboard(){
+	k8s-kube-ctl -n kube-system describe secret "$(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')"
+    cat <<- EOF
+	==========================
+
+	Use the "token:" above to login after you connect to the dashboard here:
+	 
+		http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+
+	===========================
+	EOF
+	k8s-kube-ctl proxy
+}
+
 function k8s-create-admin(){
 	k8s-kube-ctl apply -f "${BASE_DIR}/config/dashboard-adminuser.yaml"
 	k8s-kube-ctl -n kube-system describe secret "$(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')"
@@ -82,6 +96,17 @@ function k8s-update-app(){
 function k8s-delete-app(){
 	echo "INFO: k8s-delete-app:" "${IMAGE_NAME}"
 	k8s-kube-ctl delete deployment "${IMAGE_NAME}"
+}
+
+function k8s-install-metrics-server(){
+	echo "INFO: k8s-add-metrics-server"
+	rm -rf "${BASE_DIR}/metrics-server"
+	cd "${BASE_DIR}"
+	git clone https://github.com/kubernetes-incubator/metrics-server.git
+	cd "${BASE_DIR}/metrics-server" || exit 1
+	k8s-kube-ctl create -f deploy/1.8+/
+	#k8s-kube-ctl create -f deploy/1.7/
+	k8s-kube-ctl get deployment metrics-server -n kube-system
 }
 
 function k8s-delete-app-expose(){

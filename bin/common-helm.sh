@@ -108,12 +108,8 @@ function helm-enable-cluster-autoscaling(){
 	k8s-kube-ctl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' \
 	 || echo "WARN: Trapped: k8s-kube-ctl patch deploy "
 
+	sleep 20
 	helm-cli install --name myfn cluster-autoscaler
-
-	echo "*** TODO *** Finish Installing cluster-autoscaler "
-
-
-
 
 
 }

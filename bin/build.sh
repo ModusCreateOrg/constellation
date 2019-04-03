@@ -68,10 +68,22 @@ kubeconfig)
 
 # Create the cluster dashboard and admin user.
 create-dashboard)
-   	k8s-create-dashboard
-   	k8s-create-admin
- 	exit 0
-   	;;
+      k8s-create-dashboard
+      k8s-create-admin
+   exit 0
+      ;;
+
+# Install the metrics server on the cluster
+install-metrics-server)
+      k8s-install-metrics-server
+   exit 0
+      ;;
+
+# Open a proxy to the dashboard.
+proxy-dashboard)
+      k8s-proxy-dashboard
+   exit 0
+      ;;
 
 # Delete all apps
 delete-all)

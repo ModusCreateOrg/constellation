@@ -22,7 +22,7 @@ build.sh <app-cmd> [all|<app-dir> [<app-dir ... ]]
 
 WHERE:
 
-	PROJ-CMD:
+	<proj-cmd>:
 
 		'help'.       		- Prints this help message.
 
@@ -33,11 +33,22 @@ WHERE:
 		'kubeconfig'  		- Update the kubeconfig in your home dir.
 
 		'create-dashboard'  - Create the cluster dashboard and the admin user. The token prints on stdout.
+
+		'proxy-dashboard'   - Open a proxy to the dashboard.
+
+		'install-metrics-server' - Install the metrics server on the cluster.
 	     
-	    'enable-cluster-autoscaling' - Configure and enable autoscaling for the cluster.
+        'enable-cluster-autoscaling' - Configure and enable autoscaling for the cluster.
 
 
-	APP-CMD:
+	<app-dir>:
+	
+		Specifies the application directory of the selected app.
+        A value of 'all' iterates over the application directories.
+        Directories that begin with '_' are skipped in the iteration.
+
+
+	<app-cmd>:
 
 		'run'               - Run this application locally exposing a port if appropriate.
 
@@ -64,10 +75,7 @@ WHERE:
 		'delete'            - Delete this application from the cluster idempotently.
 
 
-	<app-dir> - Specifies the application directory of the app to build.
-	            A value of 'all' iterates over the application directories.
-	            Directories that begin with '_' are skipped in the iteration.
-
+	
  
 EOF
 

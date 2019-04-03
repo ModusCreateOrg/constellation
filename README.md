@@ -65,6 +65,13 @@ A `Jenkinsfile` is provided that will allow Jenkins to execute Terraform. In ord
     ```
     https://github.com/helm/helm/releases
     ```
+- tiller:
+    Run these commands to install the tiller cli:
+    ```
+    cd /tmp
+    sudo helm init
+    ```
+
 ### Terraform
 
 This Terraform setup stores its state in Amazon S3 and uses DynamoDB for locking. There is a bit of setup required to bootstrap that configuration. Yu can use [this repository](https://github.com/monterail/terraform-bootstrap-example) to use Terraform to do that bootstrap process. The `backend.tfvars` file in that repo should be modified as follows to work with this project:
@@ -93,6 +100,65 @@ These commands will then set up cloud resources using terraform:
 
 This assumes that you already have a Route 53 domain in your AWS account created.
 You need to either edit variables.tf to match your domain and AWS zone or specify these values as command line `var` parameters.
+
+#### Demonstration Preparation
+At any time you can enter "./bin/build.sh help" for the available commands.
+
+```
+cd <project root>
+source ./env.sh
+./bin/terraform plan
+./bin/terraform apply
+./bin/build.sh build all
+./bin/build.sh push all
+./bin/build.sh deploy all
+./bin/build.sh add-dns all
+
+Connect a browser to test these endpoints:
+    http://eks-demo-webapp.moduscreate.com
+    http://eks-demo-spin.moduscreate.com
+    http://eks-demo-spin.moduscreate.com/api/spin
+```
+
+#### Startup Monitoring
+```
+In a new window (1):
+cd <project root>
+source ./env.sh
+./bin/build.sh proxy-dashboard
+
+Follow the onscreen instruction, connect a browser to the dashboard, and login with the token.
+
+```
+
+#### Startup Scaling
+```
+In a new window (2):
+cd <project root>
+source ./env.sh
+./bin/build.sh run-jmeter-www webapp
+
+```
+```
+In a new window (3):
+cd <project root>
+source ./env.sh
+./bin/build.sh run-jmeter-www spin
+
+```
+
+```
+Useful commands:
+./bin/build.sh kubeconfig (run this first to update the config in your home directory)
+kubectl top node
+kubectl top pod
+kubectl get hpa
+```
+
+#### Startup Scaling
+
+- Show the PODs and the Nodes increasing in the dashboard.
+- Explain the request rates and response times in the jmeter windows
 
 ### Development Notes
 - The ECR repositories are not currently created by Terraform. Depending on the goals of the demo they could be managed by Terraform.

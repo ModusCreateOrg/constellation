@@ -8,6 +8,7 @@
 /env.sh
 *.log
 helm/
+metrics-server
 
 #Ignore all but .tf files in /terraform
 /terraform/*

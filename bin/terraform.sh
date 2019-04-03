@@ -118,6 +118,7 @@ init_terraform
 
 if [ -f /tmp/isBuild ] && [ "$verb" == "apply" ]; then
   "${DIR}/build.sh" create-dashboard
+  "${DIR}/build.sh" install-metrics-server
   "${DIR}/build.sh" enable-cluster-autoscaling
   rm -f /tmp/isBuild
 fi
