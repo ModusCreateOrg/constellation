@@ -48,6 +48,24 @@ help)
 	exit 0
     ;; 
 
+# Standup all of the infrastrucrure for the demo
+stand-up-demo)
+      "${BASE_DIR}/bin/terraform.sh" plan
+      "${BASE_DIR}/bin/terraform.sh" apply
+      "${BASE_DIR}/bin/build.sh" build all
+      "${BASE_DIR}/bin/build.sh" push all
+      "${BASE_DIR}/bin/build.sh" deploy all
+      "${BASE_DIR}/bin/build.sh" add-dns all
+   exit 0
+   ;; 
+
+# Tear down of the infrastrucrure for the demo
+tear-down-demo)
+      "${BASE_DIR}/bin/terraform.sh" plan-destroy
+      "${BASE_DIR}/bin/terraform.sh" apply
+   exit 0
+   ;; 
+
 # List all of the PODs in the cluster
 list-pods)
    	k8s-list-pods

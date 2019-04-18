@@ -37,4 +37,4 @@ export APP_DOMAIN_NAME="eks-demo-webapp.moduscreate.com"
 export HAS_APP_SCALING=true
 export APP_SCALE_CPU_PERCENT=50
 export APP_SCALE_MIN=1
-export APP_SCALE_MAX=10
+export APP_SCALE_MAX=100

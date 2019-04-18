@@ -6,7 +6,7 @@ module "demo-cluster" {
 
   worker_groups = [
     {
-      instance_type = "m4.medium"
+      instance_type = "m5.large"
       asg_max_size  = 5
     },
   ]

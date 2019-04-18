@@ -101,30 +101,26 @@ These commands will then set up cloud resources using terraform:
 This assumes that you already have a Route 53 domain in your AWS account created.
 You need to either edit variables.tf to match your domain and AWS zone or specify these values as command line `var` parameters.
 
-#### Demonstration Preparation
+#### Demonstration Stand-up
 At any time you can enter "./bin/build.sh help" for the available commands.
 
 ```
-cd <project root>
-source ./env.sh
-./bin/terraform plan
-./bin/terraform apply
-./bin/build.sh build all
-./bin/build.sh push all
-./bin/build.sh deploy all
-./bin/build.sh add-dns all
+./bin/build.sh stand-up-demo
 
 Connect a browser to test these endpoints:
     http://eks-demo-webapp.moduscreate.com
     http://eks-demo-spin.moduscreate.com
     http://eks-demo-spin.moduscreate.com/api/spin
 ```
+#### Demonstration Trear-down
+```
+./bin/build.sh tear-down-demo
+
+```
 
 #### Startup Monitoring
 ```
-In a new window (1):
-cd <project root>
-source ./env.sh
+
 ./bin/build.sh proxy-dashboard
 
 Follow the onscreen instruction, connect a browser to the dashboard, and login with the token.
@@ -133,16 +129,12 @@ Follow the onscreen instruction, connect a browser to the dashboard, and login w
 
 #### Startup Scaling
 ```
-In a new window (2):
-cd <project root>
-source ./env.sh
+
 ./bin/build.sh run-jmeter-www webapp
 
 ```
 ```
-In a new window (3):
-cd <project root>
-source ./env.sh
+
 ./bin/build.sh run-jmeter-www spin
 
 ```
@@ -153,6 +145,16 @@ Useful commands:
 kubectl top node
 kubectl top pod
 kubectl get hpa
+kubectl get deployments
+kubectl get rs
+kubectl get pods
+kubectl describe deployments
+kubectl scale deployment.v1.apps/k8s-dev-spin --replicas=10
+kubectl get deployment metrics-server -n kube-system
+kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes"
+kubectl run -i --tty load-generator --image=busybox /bin/sh
+kubectl -n metrics logs -l app=metrics-server
+
 ```
 
 #### Startup Scaling
@@ -163,6 +165,7 @@ kubectl get hpa
 ### Development Notes
 - The ECR repositories are not currently created by Terraform. Depending on the goals of the demo they could be managed by Terraform.
 - Run './bin/build.sh help' for help on building applications.
+- For EKS to report CPU usage to the metrics server, the 'kubectl run' command needs a cpu limit applied: EG: "--limits=cpu=200m,memory=512Mi" 
 
 # Modus Create
 

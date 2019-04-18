@@ -91,20 +91,20 @@ mkdir -p "${APP_BUILD_DIR}"
     deploy)
         if [ "${IS_DEPLOYABLE}" == 'true' ]; then  
             
-            k8s-deploy-app
+            k8s-run-app || echo "INFO: Trapped k8s-deploy-app: ${app_dir}"
             
             if [ "${HAS_PORT}" == 'true' ]; then
-              k8s-expose-app
+              k8s-expose-app || echo "INFO: Trapped k8s-expose-app: ${app_dir}"
             fi
             
             if [ "${HAS_APP_SCALING}" == 'true' ]; then
-              k8s-autoscale-app
+              k8s-autoscale-app || echo "INFO: Trapped k8s-expose-app: ${app_dir}"
             fi
         else
             echo "WARN: This command (${app_op}) is not a valid operation for a non-deployable application!"
         fi
         ;;
-    
+
     # Add this application to the DNS
     add-dns)
         if [ "${IS_DEPLOYABLE}" != 'true' ]; then  
