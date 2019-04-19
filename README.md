@@ -3,7 +3,7 @@ Kubernetes EKS Scaling Demo
 
 This repository houses demo code for Modus Create's Kubernetes and EKS Scaling demo.
 
-The code is based in part on commit 61bee0b7858bbcd3d4276f186cc4cc7bf298ac11 from the [ModusCreateOrg/k8s-eks-scaling-demo](https://github.com/ModusCreateOrg/k8s-eks-scaling-demo/) repository.
+The code is based in part on commit 61bee0b7858bbcd3d4276f186cc4cc7bf298ac11 from the [ModusCreateOrg/devops-infra-demo](https://github.com/ModusCreateOrg/devops-infra-demo/) repository.
 
  
 Instructions
