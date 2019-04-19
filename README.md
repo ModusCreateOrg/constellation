@@ -1,7 +1,13 @@
 Isokinetikube - a Kubernetes EKS Scaling Demo
 =============================================
 
-This repository houses demo code for Modus Create's Kubernetes and EKS Scaling demo.
+This repository houses demo code for Modus Create's Kubernetes and EKS Scaling demo, called *Isokinetikube*.
+
+The fleet of Kubernetes worker nodes scales up and down in response to demand, similar to the way the [Hoberman Sphere](https://en.wikipedia.org/wiki/Hoberman_sphere) isokinetic sculpture changes sizes in response to pulling and pushing forces. Here's a video of a Holberman Sphere at work:
+
+[![Hoberman Sphere video](http://img.youtube.com/vi/0b40puT7N68/0.jpg)](http://www.youtube.com/watch?v=0b40puT7N68E)
+
+Video credit: _Drehimpulserhaltung Pirouetteneffekt Hoberman Sphere_ by Florian Karsten, licensed under a Creative Commons Attribution license
 
 The code is based in part on commit 61bee0b7858bbcd3d4276f186cc4cc7bf298ac11 from the [ModusCreateOrg/devops-infra-demo](https://github.com/ModusCreateOrg/devops-infra-demo/) repository.
 
@@ -166,13 +172,6 @@ kubectl -n metrics logs -l app=metrics-server
 - The ECR repositories are not currently created by Terraform. Depending on the goals of the demo they could be managed by Terraform.
 - Run './bin/build.sh help' for help on building applications.
 - For EKS to report CPU usage to the metrics server, the 'kubectl run' command needs a cpu limit applied: EG: "--limits=cpu=200m,memory=512Mi" 
-
-# About the name Isokinetikube
-
-The fleet of Kubernetes worker nodes scales up and down in response to demand, similar to the way the [Hoberman Sphere](https://en.wikipedia.org/wiki/Hoberman_sphere) isokinetic sculpture changes sizes in response to pulling and pushing forces. See:
-
-[![Hoberman Sphere video](http://img.youtube.com/vi/0b40puT7N68/0.jpg)](http://www.youtube.com/watch?v=0b40puT7N68E)
-Credit: _Drehimpulserhaltung Pirouetteneffekt Hoberman Sphere_ by Florian Karsten, licensed under a Creative Commons Attribution license
 
 # Modus Create
 
