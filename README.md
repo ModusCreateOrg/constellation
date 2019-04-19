@@ -80,7 +80,7 @@ A `Jenkinsfile` is provided that will allow Jenkins to execute Terraform. In ord
 
 ### Terraform
 
-This Terraform setup stores its state in Amazon S3 and uses DynamoDB for locking. There is a bit of setup required to bootstrap that configuration. Yu can use [this repository](https://github.com/monterail/terraform-bootstrap-example) to use Terraform to do that bootstrap process. The `backend.tfvars` file in that repo should be modified as follows to work with this project:
+This Terraform setup stores its state in Amazon S3 and uses DynamoDB for locking. There is a bit of setup required to bootstrap that configuration. You can use [this repository](https://github.com/monterail/terraform-bootstrap-example) to use Terraform to do that bootstrap process. The `backend.tfvars` file in that repo should be modified as follows to work with this project:
 
 (Replace us-east-1 and XXXXXXXXXXXX with the AWS region and your account ID)
 ```
