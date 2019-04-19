@@ -169,7 +169,7 @@ kubectl -n metrics logs -l app=metrics-server
 
 # About the name Isokinetikube
 
-The fleet of Kubernetes worker nodes scales up and down in response to demand, in a way evocative of the way an isokinetic sculpture such as a [Hoberman Sphere](https://en.wikipedia.org/wiki/Hoberman_sphere) does.
+The fleet of Kubernetes worker nodes scales up and down in response to demand, similar to the way the [Hoberman Sphere](https://en.wikipedia.org/wiki/Hoberman_sphere) isokinetic sculpture changes sizes in response to pulling and pushing forces. See:
 
 [![Hoberman Sphere video](http://img.youtube.com/vi/0b40puT7N68/0.jpg)](http://www.youtube.com/watch?v=0b40puT7N68E)
 
