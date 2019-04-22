@@ -175,8 +175,10 @@ kubectl -n metrics logs -l app=metrics-server
 
 ---
 ![Dashboard](images/pie-charts.png)
+
 ---
 ![CloudWatch](images/CloudWatch.png)
+
 ---
 
 
