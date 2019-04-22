@@ -174,9 +174,11 @@ kubectl -n metrics logs -l app=metrics-server
 - For EKS to report CPU usage to the metrics server, the 'kubectl run' command needs a cpu limit applied: EG: "--limits=cpu=200m,memory=512Mi" 
 
 ---
+### Kubernettes Dashboard
 ![Dashboard](images/pie-charts.png)
 
 ---
+### CloudWatch
 ![CloudWatch](images/CloudWatch.png)
 
 ---
