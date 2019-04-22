@@ -173,6 +173,9 @@ kubectl -n metrics logs -l app=metrics-server
 - Run './bin/build.sh help' for help on building applications.
 - For EKS to report CPU usage to the metrics server, the 'kubectl run' command needs a cpu limit applied: EG: "--limits=cpu=200m,memory=512Mi" 
 
+![Dashboard](https://https://raw.githubusercontent.com/ModusCreateOrg/isokinetikube/master/images/pie-charts.png?token=AA6TXQXDK2E7AW5P277XV2K4Y5D2U)
+
+
 # Modus Create
 
 [Modus Create](https://moduscreate.com) is a digital product consultancy. We use a distributed team of the best talent in the world to offer a full suite of digital product design-build services; ranging from consumer facing apps, to digital migration, to agile development training, and business transformation.
