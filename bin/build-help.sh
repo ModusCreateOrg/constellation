@@ -26,9 +26,11 @@ WHERE:
 
         'help'              - Prints this help message.
 
-        'stand-up-demo'     - Standup all of the infrastrucrure for the demo
+        'stand-up-cluster'  - Standup the cluster infrastructure only.
+        
+        'stand-up-demo'     - Standup the cluster infrastructure with the demo components.
 
-        'tear-down-demo'    - Tear down all of the infrastrucrure for the demo
+        'tear-down-cluster' - Tear down all of the cluster infrastructure including demo assets if deployed.
 
         'list-pods'         - Lists all of the pods.
 

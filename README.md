@@ -123,9 +123,9 @@ Connect a browser to test these endpoints:
     http://eks-demo-spin.moduscreate.com
     http://eks-demo-spin.moduscreate.com/api/spin
 ```
-#### Demonstration Trear-down
+#### Demonstration Tear-down
 ```
-./bin/build.sh tear-down-demo
+./bin/build.sh tear-down-cluster
 
 ```
 

@@ -49,6 +49,13 @@ help)
     ;; 
 
 # Standup all of the infrastrucrure for the demo
+stand-up-cluster)
+      "${BASE_DIR}/bin/terraform.sh" plan
+      "${BASE_DIR}/bin/terraform.sh" apply
+   exit 0
+   ;; 
+
+# Standup all of the infrastrucrure for the demo
 stand-up-demo)
       "${BASE_DIR}/bin/terraform.sh" plan
       "${BASE_DIR}/bin/terraform.sh" apply
@@ -60,7 +67,7 @@ stand-up-demo)
    ;; 
 
 # Tear down of the infrastrucrure for the demo
-tear-down-demo)
+tear-down-cluster)
       "${BASE_DIR}/bin/terraform.sh" plan-destroy
       "${BASE_DIR}/bin/terraform.sh" apply
    exit 0
