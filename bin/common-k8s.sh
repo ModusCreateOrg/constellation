@@ -74,7 +74,11 @@ function k8s-create-admin(){
 
 function k8s-run-app(){
     echo "INFO: k83-deploy-app:" "${IMAGE_NAME}:${IMAGE_VERSION} --> ${IMAGE_NAME}"
-    k8s-kube-ctl run "${IMAGE_NAME}" "--port=${CONTAINER_PORT}" --image "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}" "--limits=cpu=200m,memory=512Mi"
+    if [ "${HAS_PORT}" != 'true' ]; then  
+        k8s-kube-ctl run "${IMAGE_NAME}" --image "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}" "--limits=cpu=200m,memory=512Mi"
+    else
+        k8s-kube-ctl run "${IMAGE_NAME}" "--port=${CONTAINER_PORT}" --image "${REPOSITORY_BASE}/${IMAGE_NAME}:${IMAGE_VERSION}" "--limits=cpu=200m,memory=512Mi"
+    fi
 }
 
 function k8s-expose-app(){
