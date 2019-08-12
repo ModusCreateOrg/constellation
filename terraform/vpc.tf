@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "github.com/terraform-aws-modules/terraform-aws-vpc?ref=v1.50.0"
+  source = "github.com/terraform-aws-modules/terraform-aws-vpc?ref=v1.66.0"
 
   name = "${var.project_name}-vpc"
 
