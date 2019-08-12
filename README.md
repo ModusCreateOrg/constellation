@@ -19,7 +19,7 @@ The fleet of Kubernetes worker nodes scales up and down in response to demand.
 If it were possible to define smaller, horizontally scalable sets of containers an entire set of environments (e.g., Dev, QA, or Prod) could be collapsed onto many fewer servers, reducing TCO significantly. If the fleet of containers could then dynamically scale-out as CPU usage (or another critical metric) increased, this would demonstrate the proof of concept of a dynamically scaled container fleet.
 
 # Solution
-This project uses AWS and Kubernetes (via [AWS EKS](https://aws.amazon.com/eks/)) to demonstrate auto scaling. It uses a test harness load sink application called `spin.py` that can be driven to induce high loads to verify that the auto scaling is working correctly, and a test harness control application that is separate to show that the cluster will stay responsive for other applications even while it is under load. The worker nodes should be spread across at least 2 AWS availability zones.
+This project uses AWS and Kubernetes (via [AWS EKS](https://aws.amazon.com/eks/)) to demonstrate autoscaling. It uses a test harness load sink application called `spin.py` that can be driven to induce high loads to verify that the autoscaling is working correctly, and a test harness control application that is separate to show that the cluster will stay responsive for other applications even while it is under load. The worker nodes should be spread across at least 2 AWS availability zones.
 
 # Implementation
 We use Terraform to define the EKS control plane and supporting resources. This demonstrates that we can deploy an application and have it scale out while maintaining an adequate quality of service for other applications in the cluster.
