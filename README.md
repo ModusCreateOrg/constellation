@@ -22,11 +22,13 @@ If it were possible to define smaller, horizontally scalable sets of containers 
 This project uses AWS and Kubernetes (via [AWS EKS](https://aws.amazon.com/eks/)) to demonstrate autoscaling. It uses a test harness load sink application called `spin.py` that can be driven to induce high loads to verify that the autoscaling is working correctly, and a test harness control application that is separate to show that the cluster will stay responsive for other applications even while it is under load. The worker nodes should be spread across at least 2 AWS availability zones.
 
 # Implementation
-We use Terraform to define the EKS control plane and supporting resources. This demonstrates that we can deploy an application and have it scale out while maintaining an adequate quality of service for other applications in the cluster.
+We use [Terraform](https://www.terraform.io/) to define the [AWS EKS](https://aws.amazon.com/eks/) control plane and supporting resources. This demonstrates that we can deploy an application and have it scale out while maintaining an adequate quality of service for other applications in the cluster.
 
-This uses pod autoscaling in conjunction with cluster autoscaling to scale out a set of 2 applications in it: one application that is just nginx serving up a simple HTML page and set of static resources, and another application `spin.py` that is a Python application built with Bottle that has an `/api/spin` GET endpoint that will spin the CPU for 2 seconds and return a `text/plain` response that describes the node and characteristics of the run. The python application uses WSGI and is run through the Emperor WSGI server. An ingress controller allows access to the applications. We can monitor the Kubernetes cluster with Prometheus.
+This uses [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) in conjunction with the [cluster autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) to scale out a set of 2 applications in it: one application that is just [NGINX](https://www.nginx.com/) serving up a simple HTML page and set of static resources, and another application `spin.py` that is a Python application built with [Bottle](https://bottlepy.org/) that has an `/api/spin` GET endpoint that will spin the CPU for 2 seconds and return a `text/plain` response that describes the node and characteristics of the run. The python application uses WSGI and is run through the [Emperor](https://uwsgi-docs.readthedocs.io/en/latest/Emperor.html) uWSGI server. An ingress controller allows access to the applications. We can monitor the Kubernetes cluster with [Prometheus](https://prometheus.io/).
 
-See attached `spin.py` for some code tested to spin the CPU. The index document for the web site can be the A REST-ful endpoint `/spin` will eat CPU time. You could use Docker Compose to test the 2 applications locally before deploying them to Kubernetes.
+See [`spin.py`](https://github.com/ModusCreateOrg/constellation/blob/master/applications/spin/src/spin.py) for code that will consume CPU cycles. Calling the RESTful endpoint with a GET of `/api/spin` will consume CPU time.
+
+You should be able to use Docker Compose to test the 2 applications locally before deploying them to Kubernetes.
 
 # Testing
 To test the scale-out characteristics, use JMeter to apply one thread group with a Ramp to Fail / Stress test load to the `/api/spin` application and another thread group that applies a steady state load to the other application.
@@ -69,35 +71,34 @@ The AWS profile IAM user should have full control of EC2 in the account you are 
 A `Jenkinsfile` is provided that will allow Jenkins to execute Terraform. In order for Jenkins to do this, it needs to have AWS credentials set up, preferably through an IAM role, granting full control of EC2 and VPC resources in that account. Terraform needs this to create a VPC and EC2 resources. This could be pared down further through some careful logging and role work.
 
 ## Requirements
-- An ECR repository to store the images.
-- The command line utility 'jq'.
-- aws-iam-authenticator
-	```
+* An ECR repository to store the images.
+* The command line utility 'jq'.
+* aws-iam-authenticator:
+
 	curl -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
     chmod 755 /usr/local/bin/aws-iam-authenticator
-	```
-    If 'aws-iam-authenticator' isn't installed, prep.sh will install it from the AWS repository.
-- kubectl:
-	```
+
+If 'aws-iam-authenticator' isn't installed, prep.sh will install it from the AWS repository.
+* kubectl:
+
 	curl -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl
     chmod 755 /usr/local/bin/kubectl
-	```
-    If 'kubectl' isn't installed, prep.sh will install it from the AWS repository.
 
-- helm:
-    ```
+If 'kubectl' isn't installed, prep.sh will install it from the AWS repository.
+
+* helm:
+
     brew install kubernetes-helm
-    ```
-    or
-    ```
+
+or
+
     https://github.com/helm/helm/releases
-    ```
-- tiller:
-    Run these commands to install the tiller cli:
-    ```
+
+* tiller:
+Run these commands to install the tiller cli:
+
     cd /tmp
     sudo helm init
-    ```
 
 ## Terraform
 
@@ -131,10 +132,8 @@ You need to either edit variables.tf to match your domain and AWS zone or specif
 ## Building and Starting the Demo
 At any time you can enter "./bin/build.sh help" for the available commands.
 
-```
-./bin/build.sh stand-up-demo
+    ./bin/build.sh stand-up-demo
 
-```
 Connect a browser to test these endpoints:
 
 * http://eks-demo-webapp.moduscreate.com
@@ -144,22 +143,19 @@ Connect a browser to test these endpoints:
 ## Monitoring the applications
 
 Run this command to start up and connect to the dashboard:
-```
-./bin/build.sh proxy-dashboard
-```
+
+    ./bin/build.sh proxy-dashboard
 
 Follow the instructions it gives, connect a browser to the dashboard, and login with the token.
 
 ## Induce load that will scale out the application
 Run this command in one terminal window to put load on the web application to make it scale out:
-```
-./bin/build.sh run-jmeter-www webapp
-```
+
+    /bin/build.sh run-jmeter-www webapp
 
 Run this command in another terminal window to put load on the load sink `spin.py` application to make it scale out:
-``` 
-./bin/build.sh run-jmeter-www spin
-```
+
+    ./bin/build.sh run-jmeter-www spin
 
 Once you have run the commands to make JMeter apply load to the tests, look at the Prometheus dashboard where you will be able to observe increasing pod and node counts. By looking at these and the request and response rates in JMeter, you will get a good idea about how the applications are scaling out.
 
@@ -185,9 +181,8 @@ kubectl -n metrics logs -l app=metrics-server
 
 ## Stopping the Demo
 Stop the demo with this command:
-```
-./bin/build.sh tear-down-demo
-```
+
+    ./bin/build.sh tear-down-demo
 
 ## Development Notes
 - Run './bin/build.sh help' for help on building applications.
@@ -222,7 +217,6 @@ The code is based in part on commit 61bee0b7858bbcd3d4276f186cc4cc7bf298ac11 fro
 * https://www.caktusgroup.com/blog/2017/03/14/production-ready-dockerfile-your-python-django-app/ - A good uWSGI-compatible Dockerfile and Docker Compose file the authors have given permission for others to use as a starting point for Python containers runing WSGI applications
 * https://hub.docker.com/_/nginx/ - official NGINX Docker container, use this to serve up the simple web application
 
-
 ## Python - https://www.python.org/
 * https://bottlepy.org/docs/dev/tutorial.html - Bottle (super simple REST-ful web server framework)
 
@@ -233,7 +227,6 @@ The code is based in part on commit 61bee0b7858bbcd3d4276f186cc4cc7bf298ac11 fro
 * https://moduscreate.com/blog/jmeter-performance-testing/ - JMeter tutorial
 * https://moduscreate.com/blog/performance-remediation-using-new-relic-jmeter-part-1-3/ - JMeter performance monitoring article (part 1)
 * https://moduscreate.com/blog/performance-remediation-using-new-relic-jmeter-part-2-3/ - JMeter performance monitoring article (part 2) - has load test type definitions
-
 
 # Modus Create
 
