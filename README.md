@@ -13,9 +13,10 @@ Constellation
 The fleet of Kubernetes worker nodes scales up and down in response to demand.
 
 # Problem Description
-[Modus Create](https://moduscreate.com/) has multiple customers who are interested in reducing their AWS bills through containerizing their applications for development and production. Generally customers in an intermediate stage of AWS adoption run a many different EC2 instances with one application per instance, on relatively large and expensive instance types. This fleet of instances are not very busy overall with respect to CPU and memory usage.
+# Problem Description
+[Modus Create](https://moduscreate.com/) has multiple customers who are interested in reducing their AWS bills by containerizing their applications for development and production. Generally, customers in an intermediate stage of AWS adoption run many different EC2 instances with one application per instance, on relatively large and expensive instance types. This fleet of instances often suffers from very low CPU and memory usage relative to total capacity.
 
-If it were possible to define smaller, horizontally scalable sets of containers an entire set of environments (e.g. Dev, QA, or Prod) could be collapsed onto many fewer servers, reducing TCO significantly. If the fleet of containers could then dynamically scale out as CPU usage (or another critical metric) increased, this would demonstrate the proof of concept of a dynamically scaled container fleet.
+If it were possible to define smaller, horizontally scalable sets of containers an entire set of environments (e.g., Dev, QA, or Prod) could be collapsed onto many fewer servers, reducing TCO significantly. If the fleet of containers could then dynamically scale-out as CPU usage (or another critical metric) increased, this would demonstrate the proof of concept of a dynamically scaled container fleet.
 
 # Solution
 This project uses AWS and Kubernetes (via [AWS EKS](https://aws.amazon.com/eks/)) to demonstrate auto scaling. It uses a test harness load sink application called `spin.py` that can be driven to induce high loads to verify that the auto scaling is working correctly, and a test harness control application that is separate to show that the cluster will stay responsive for other applications even while it is under load. The worker nodes should be spread across at least 2 AWS availability zones.
