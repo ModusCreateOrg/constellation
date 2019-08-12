@@ -1,5 +1,5 @@
 module "demo-cluster" {
-  source       = "terraform-aws-modules/terraform-aws-eks"
+  source       = "terraform-aws-modules/eks/aws"
   version      = "~> v4.0.2"
   cluster_name = "${var.project_name}-cluster"
   subnets      = ["${module.vpc.public_subnets}"]
