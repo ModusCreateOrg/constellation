@@ -19,6 +19,7 @@ BASE_DIR="$DIR/.."
 
 cd "$BASE_DIR"
 clean_root_owned_docker_files
+rm -rf .terraform
 git clean -fdx
 cp env.sh.sample env.sh
 cp terraform/variables-local.tf.sample terraform/variables-local.tf
