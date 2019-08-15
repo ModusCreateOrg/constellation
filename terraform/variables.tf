@@ -43,12 +43,6 @@ variable "public_key_file" {
   default     = "~/.ssh/id_rsa.pub"
 }
 
-data "aws_caller_identity" "current" {}
-
-output "account_id" {
-  value = "${data.aws_caller_identity.current.account_id}"
-}
-
 variable "aws_account_id_for_ami" {
   description = "AWS Account ID where AMIs live, if not the default"
   default     = ""
