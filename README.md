@@ -13,7 +13,6 @@ Constellation
 The fleet of Kubernetes worker nodes scales up and down in response to demand.
 
 # Problem Description
-# Problem Description
 [Modus Create](https://moduscreate.com/) has multiple customers who are interested in reducing their AWS bills by containerizing their applications for development and production. Generally, customers in an intermediate stage of AWS adoption run many different EC2 instances with one application per instance, on relatively large and expensive instance types. This fleet of instances often suffers from very low CPU and memory usage relative to total capacity.
 
 If it were possible to define smaller, horizontally scalable sets of containers an entire set of environments (e.g., Dev, QA, or Prod) could be collapsed onto many fewer servers, reducing TCO significantly. If the fleet of containers could then dynamically scale-out as CPU usage (or another critical metric) increased, this would demonstrate the proof of concept of a dynamically scaled container fleet.
