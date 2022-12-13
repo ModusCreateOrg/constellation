@@ -46,7 +46,7 @@ variable "public_key_file" {
 data "aws_caller_identity" "current" {}
 
 output "account_id" {
-  value = "${data.aws_caller_identity.current.account_id}"
+  value = data.aws_caller_identity.current.account_id
 }
 
 variable "aws_account_id_for_ami" {
